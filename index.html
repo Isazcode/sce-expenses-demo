@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>SCE Expense Reports · Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a statement-reconciliation workbench — card charges on the left, receipt drop tray on the right, export bar at the end */
+:root{
+  --bg:#f5f6f4; --surface:#ffffff; --ink:#111412; --muted:#5d655f; --line:#dde1dc;
+  --accent:#2f9e22; --accent-ink:#ffffff; --brand:#63db54; --brand-ink:#0b0d0b;
+  --ok:#1f7a17; --ok-bg:#e5f5e1; --warn:#8a5a00; --warn-bg:#fdf1d8; --bad:#a3261b; --bad-bg:#fbe5e2;
+  --quiet-bg:#eef0ed; --focus:#2f9e22;
+  --f-display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e110f; --surface:#171b18; --ink:#e8ece8; --muted:#9aa49c; --line:#2b322d;
+  --accent:#63db54; --accent-ink:#0b0d0b; --brand:#63db54; --brand-ink:#0b0d0b;
+  --ok:#8fe383; --ok-bg:#183019; --warn:#f2c46b; --warn-bg:#33270e; --bad:#f19a90; --bad-bg:#3a1916;
+  --quiet-bg:#1f2420; --focus:#63db54; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e110f; --surface:#171b18; --ink:#e8ece8; --muted:#9aa49c; --line:#2b322d;
+  --accent:#63db54; --accent-ink:#0b0d0b; --brand:#63db54; --brand-ink:#0b0d0b;
+  --ok:#8fe383; --ok-bg:#183019; --warn:#f2c46b; --warn-bg:#33270e; --bad:#f19a90; --bad-bg:#3a1916;
+  --quiet-bg:#1f2420; --focus:#63db54; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:grid;gap:20px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:28px;font-weight:800}
+h2{font-size:18px;font-weight:700}
+.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.num{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--f-mono);font-size:13px}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.small{padding:5px 10px;font-size:13px}
+.btn.link{border:none;background:none;padding:4px 6px;color:var(--muted);font-weight:500;text-decoration:underline;text-underline-offset:3px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* header */
+.head{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.logo{width:64px;height:64px;flex:none;border-radius:4px}
+.head-text{flex:1 1 260px;min-width:0;display:grid;gap:2px}
+.head-text p{margin:0;color:var(--muted);max-width:62ch}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.field{display:grid;gap:4px;min-width:0}
+.field label{font-size:12px;font-weight:600;color:var(--muted)}
+.field input,.field select,.inp{border:1px solid var(--line);background:var(--bg);border-radius:7px;padding:8px 10px;width:100%;min-width:0}
+.field input:focus,.inp:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+
+.banner{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 14px;font-size:14px}
+.banner b{color:inherit}
+.banner .sp{flex:1 1 200px;min-width:0}
+
+/* summary strip */
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stat{background:var(--surface);padding:12px 16px;display:grid;gap:2px}
+.stat .v{font-family:var(--f-display);font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat .l{font-size:12px;color:var(--muted)}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
+@media (max-width:980px){.grid{grid-template-columns:minmax(0,1fr)}}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;min-width:0}
+.panel-h{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--line)}
+.panel-h .sp{flex:1}
+.filters{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.filters button{border:none;background:none;padding:6px 10px;font-size:13px;cursor:pointer;color:var(--muted)}
+.filters button[aria-pressed="true"]{background:var(--quiet-bg);color:var(--ink);font-weight:600}
+
+/* expense lines */
+.lines{display:grid}
+.line{display:grid;grid-template-columns:92px minmax(0,1.1fr) minmax(0,1.6fr) 84px;gap:10px 14px;padding:14px 16px;border-bottom:1px solid var(--line);align-items:start;position:relative}
+.line:last-child{border-bottom:none}
+.line.personal{background:var(--quiet-bg)}
+.line.personal .what{opacity:.7}
+.line.drop{outline:2px dashed var(--accent);outline-offset:-4px}
+.toggle{display:grid;gap:4px}
+.seg{display:grid;grid-template-columns:1fr;border:1px solid var(--line);border-radius:7px;overflow:hidden;font-size:12px}
+.seg button{border:none;background:var(--surface);padding:5px 4px;cursor:pointer;color:var(--muted);font-weight:500}
+.seg button+button{border-top:1px solid var(--line)}
+.seg button[aria-pressed="true"].biz{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.seg button[aria-pressed="true"].per{background:var(--ink);color:var(--surface);font-weight:700}
+.what{display:grid;gap:3px;min-width:0}
+.what .merchant{font-weight:600;overflow-wrap:anywhere}
+.what .sub{font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 10px}
+.what .amt{font-family:var(--f-display);font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;background:var(--quiet-bg);color:var(--muted);font-weight:600}
+.tag.cash{background:var(--warn-bg);color:var(--warn)}
+.inputs{display:grid;gap:8px;min-width:0}
+.inputs .inp{background:var(--bg);font-size:14px}
+.inputs .inp.need{border-color:color-mix(in srgb,var(--warn) 55%,var(--line))}
+.line.personal .inputs{display:none}
+.line.personal .persnote{display:block}
+.persnote{display:none;font-size:13px;color:var(--muted);align-self:center}
+.rc{display:grid;gap:6px;justify-items:center;text-align:center}
+.thumb{width:72px;height:88px;border-radius:6px;border:1px solid var(--line);background:var(--bg) center/cover no-repeat;cursor:pointer;display:grid;place-items:center;font-size:11px;color:var(--muted);padding:0;font-family:var(--f-mono)}
+.attach{width:72px;height:88px;border-radius:6px;border:1.5px dashed var(--line);background:none;cursor:pointer;color:var(--muted);font-size:12px;display:grid;place-items:center;padding:6px;line-height:1.2}
+.attach:hover{border-color:var(--accent);color:var(--ink)}
+.line.personal .rc{visibility:hidden}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.quiet{background:var(--quiet-bg);color:var(--muted)}
+.statusrow{grid-column:2 / -1;display:flex;gap:6px;flex-wrap:wrap;margin-top:-2px}
+.rm{position:absolute;top:10px;right:10px}
+@media (max-width:640px){
+  .line{grid-template-columns:76px minmax(0,1fr)}
+  .inputs{grid-column:1 / -1}
+  .rc{grid-column:1 / 2;grid-row:3;justify-items:start}
+  .statusrow{grid-column:2 / -1;grid-row:3;align-self:center}
+  .persnote{grid-column:1 / -1}
+}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
+
+/* tray */
+.tray{display:grid;gap:12px;padding:14px 16px}
+.dz{border:1.5px dashed var(--line);border-radius:10px;padding:22px 14px;text-align:center;display:grid;gap:8px;justify-items:center;cursor:pointer;background:var(--bg)}
+.dz.over{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--bg))}
+.dz strong{font-family:var(--f-display);font-size:16px}
+.dz span{font-size:13px;color:var(--muted);max-width:30ch}
+.ai-note{font-size:12.5px;color:var(--muted);margin:0}
+.ai-note.on{color:var(--ok)}
+.tlist{display:grid;gap:10px}
+.titem{display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px;border:1px solid var(--line);border-radius:10px;padding:10px;align-items:start}
+.titem .thumb{width:56px;height:70px}
+.titem .body{display:grid;gap:6px;min-width:0;font-size:13px}
+.titem .read{color:var(--muted);overflow-wrap:anywhere}
+.titem select{font-size:13px;padding:6px 8px}
+.titem .acts{display:flex;gap:6px;flex-wrap:wrap}
+.spin{width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;display:inline-block;animation:sp .8s linear infinite;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+
+/* how it works */
+.how{padding:14px 16px;display:grid;gap:10px;font-size:13.5px;color:var(--muted)}
+.how ol{margin:0;padding-left:18px;display:grid;gap:6px}
+.how b{color:var(--ink)}
+
+/* export */
+.export{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:16px}
+@media (max-width:720px){.export{grid-template-columns:minmax(0,1fr)}}
+.checks{display:grid;gap:6px;font-size:14px}
+.checks div{display:flex;gap:8px;align-items:baseline}
+.checks .i{font-weight:700;width:14px;flex:none}
+.checks .ok .i{color:var(--ok)}
+.checks .no .i{color:var(--warn)}
+.ex-btns{display:flex;gap:10px;flex-wrap:wrap}
+.msg{font-size:13px;color:var(--muted);min-height:1em}
+
+/* new-expense form */
+.addform{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);background:var(--bg)}
+.addform .full{grid-column:1 / -1;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+
+/* lightbox */
+.lb{position:fixed;inset:0;background:rgba(8,10,9,.78);display:grid;place-items:center;z-index:50;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.lb-card{background:var(--surface);border-radius:12px;max-width:min(720px,100%);max-height:100%;display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden}
+.lb-h{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.lb-h .sp{flex:1;min-width:0;font-size:13px;overflow-wrap:anywhere}
+.lb-body{overflow:auto;display:grid;place-items:center;background:var(--bg)}
+.lb-body img{max-width:100%;display:block}
+.lb-body .pdf{padding:40px;color:var(--muted)}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.who{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.who b{color:var(--ink);font-weight:600}
+.field input[readonly]{background:var(--quiet-bg);color:var(--muted)}
+textarea.inp{resize:vertical;min-height:64px;font:inherit}
+.done{display:grid;gap:10px;padding:18px 16px;background:var(--ok-bg);color:var(--ok);border-radius:0 0 12px 12px}
+.done h3{font-size:18px}
+.done a{color:inherit;font-weight:600}
+.progress{font-size:13px;color:var(--muted)}
+.errbox{background:var(--bad-bg);color:var(--bad);border-radius:8px;padding:10px 12px;font-size:14px}
+.pv{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 14px;font-size:14px}
+.pv .sp{flex:1 1 240px;min-width:0}
+.danna{display:grid;gap:16px;padding:16px;border-top:1px solid var(--line)}
+.danna h3{font-size:16px}
+.mail{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.mail-h{padding:10px 14px;border-bottom:1px solid var(--line);display:grid;gap:3px;font-size:13px;background:var(--bg)}
+.mail-h b{font-weight:600}
+.mail-b{padding:14px;overflow-x:auto;font-size:14px}
+.mail-b table{border-collapse:collapse;font-size:13px}
+.mail-b th,.mail-b td{border:1px solid var(--line);padding:6px 8px;text-align:left;white-space:nowrap}
+.mail-b th{background:var(--ok-bg);color:var(--ok)}
+.att{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:12.5px;margin-top:4px}
+.tree{font-family:var(--f-mono);font-size:12.5px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;white-space:pre;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="pv"><span class="sp"><b>Demo.</b> Sample data for a made-up employee. Nothing is sent or saved. Drag the <a href="samples/" style="color:inherit;font-weight:600">sample receipts</a> into the Receipts box to see them matched, then press Submit to see what Danna receives. In the real app, people sign in with their SCE Microsoft account.</span><button class="btn small" id="pvBlank">Start a blank report</button></div>
+  <header class="head">
+    <img class="logo" alt="Snapper Creek Energy" src="data:image/png;base64,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">
+    <div class="head-text">
+      <span class="eyebrow">Snapper Creek Energy · Finance</span>
+      <h1>Expense Report</h1>
+      <p>Import your card statement, mark what's business, add a receipt to each charge, and submit. Your report and receipts go straight to Danna in SharePoint.</p>
+    </div>
+    <div class="who" id="who"><span>Signed in as <b id="whoName">…</b></span><a class="btn link" href="/.auth/logout?post_logout_redirect_uri=/">Sign out</a></div>
+  </header>
+
+  <section class="meta" aria-label="Report details">
+    <div class="field"><label for="emp">Employee name</label><input id="emp" readonly placeholder="From your Microsoft account"></div>
+    <div class="field"><label for="trip">Trip or purpose</label><input id="trip" placeholder="e.g. St Barth client trip"></div>
+    <div class="field"><label for="period">Statement period</label><input id="period" placeholder="e.g. Feb 2026"></div>
+  </section>
+
+  <section class="summary" aria-label="Totals">
+    <div class="stat"><span class="v num" id="sBiz">$0.00</span><span class="l">Business total</span></div>
+    <div class="stat"><span class="v num" id="sReimb">$0.00</span><span class="l">Out-of-pocket to reimburse</span></div>
+    <div class="stat"><span class="v num" id="sReady">0 / 0</span><span class="l">Business lines ready</span></div>
+    <div class="stat"><span class="v num" id="sPers">$0.00</span><span class="l">Personal on company card</span></div>
+  </section>
+
+  <div class="grid">
+    <section class="panel" aria-labelledby="linesH">
+      <div class="panel-h">
+        <h2 id="linesH">Charges</h2>
+        <span class="sp"></span>
+        <div class="filters" role="group" aria-label="Show">
+          <button data-f="all" aria-pressed="true">All</button>
+          <button data-f="todo" aria-pressed="false">Needs attention</button>
+          <button data-f="biz" aria-pressed="false">Business</button>
+        </div>
+        <button class="btn small" id="importBtn">Import card statement (.csv)</button>
+        <button class="btn small" id="addBtn">+ Out-of-pocket expense</button>
+        <input type="file" id="csvFile" accept=".csv,text/csv" class="visually-hidden" tabindex="-1">
+        <input type="file" id="rowFile" accept="image/*,application/pdf" class="visually-hidden" tabindex="-1">
+      </div>
+      <form class="addform" id="addForm" hidden>
+        <div class="field"><label for="aDate">Date</label><input type="date" id="aDate" required></div>
+        <div class="field"><label for="aAmt">Amount (USD)</label><input id="aAmt" inputmode="decimal" placeholder="0.00" required></div>
+        <div class="field"><label for="aMer">Paid to</label><input id="aMer" placeholder="Merchant" required></div>
+        <div class="field"><label for="aCat">Category</label>
+          <select id="aCat"><option>Dining</option><option>Travel</option><option>Lodging</option><option>Airfare</option><option>Internet</option><option>Office</option><option>Other</option></select></div>
+        <div class="full"><button type="button" class="btn small" id="addCancel">Cancel</button><button class="btn small primary" type="submit">Add expense</button></div>
+      </form>
+      <div class="lines" id="lines"></div>
+    </section>
+
+    <aside class="panel" aria-labelledby="trayH">
+      <div class="panel-h"><h2 id="trayH">Receipts</h2></div>
+      <div class="tray">
+        <div class="dz" id="dz" role="button" tabindex="0" aria-describedby="aiNote">
+          <strong>Drop receipt photos here</strong>
+          <span>Add several at once. Photos, screenshots or PDFs all work.</span>
+          <button class="btn small" type="button" id="pickBtn">Choose files</button>
+        </div>
+        <input type="file" id="trayFile" accept="image/*,application/pdf" multiple class="visually-hidden" tabindex="-1">
+        <p class="ai-note" id="aiNote">Receipts you drop here wait below until you match each one to a charge.</p>
+        <div class="tlist" id="tlist"></div>
+      </div>
+      <div class="how">
+        <span class="eyebrow">How it works</span>
+        <ol>
+          <li><b>Import</b> the card statement CSV, or add cash and personal-card expenses by hand.</li>
+          <li><b>Mark</b> each charge Business or Personal.</li>
+          <li><b>Describe</b> each business charge and who it was with.</li>
+          <li><b>Attach</b> a receipt: drop it on the charge, or in the tray to have it matched.</li>
+          <li><b>Submit</b>. Danna gets an email with the report attached and a link to your receipts in SharePoint.</li>
+        </ol>
+      </div>
+    </aside>
+  </div>
+
+  <section class="panel" aria-labelledby="exH" id="exPanel">
+    <div class="panel-h"><h2 id="exH">Send to Danna</h2></div>
+    <div class="export" id="exForm">
+      <div style="display:grid;gap:12px;min-width:0">
+        <div class="checks" id="checks"></div>
+        <div class="field"><label for="note">Note for Danna (optional)</label><textarea class="inp" id="note" placeholder="Anything she should know, e.g. a missing receipt and why"></textarea></div>
+      </div>
+      <div style="display:grid;gap:8px;justify-items:start">
+        <div class="ex-btns">
+          <button class="btn primary" id="submitBtn">Submit to Danna</button>
+          <button class="btn" id="dlXlsx">Download a copy (.xlsx)</button>
+        </div>
+        <div class="msg" id="exMsg">Submitting saves the Excel report and every receipt to the Reimbursements folder in SharePoint and emails Danna a link. You get a copy of the email.</div>
+        <div class="errbox" id="exErr" hidden></div>
+      </div>
+    </div>
+    <div class="done" id="exDone" hidden>
+      <h3>Submitted to Danna</h3>
+      <div id="doneText"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" id="newReport">Start a new report</button><button class="btn small" id="dlAfter">Download a copy (.xlsx)</button></div>
+    </div>
+  </section>
+</div>
+
+<div class="lb" id="lb" hidden>
+  <div class="lb-card" role="dialog" aria-modal="true" aria-labelledby="lbT">
+    <div class="lb-h"><span class="sp" id="lbT"></span><button class="btn small" id="lbDetach">Remove receipt</button><button class="btn small" id="lbClose">Close</button></div>
+    <div class="lb-body" id="lbBody"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script>
+/* ---- Preview only: stands in for Microsoft sign-in, SharePoint and email ---- */
+(function(){
+const realFetch=window.fetch.bind(window), sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const samp=(window.claude&&window.claude.use)?window.claude.use("sample").catch(()=>null):Promise.resolve(null);
+const _d=new Date(), P=window.__PV={files:[],folder:`J. Smith ${_d.getMonth()+1}.${_d.getDate()}`,ym:`${_d.getMonth()+1}.${_d.getFullYear()}`,y:String(_d.getFullYear()),csv:`Transaction Date,Posted Date,Card No.,Description,Category,Debit,Personal
+10/6/2026,10/7/2026,0000,SKYWAY AIRLINES,Airfare,$412.40,No
+10/7/2026,10/8/2026,0000,AIRPORT NEWS & COFFEE,Dining,$9.75,Yes
+10/7/2026,10/8/2026,0000,CITYCAB HOUSTON,Travel,$48.60,No
+10/7/2026,10/9/2026,0000,MAIN ST GRILL,Dining,$186.30,No
+10/8/2026,10/9/2026,0000,BAYOU GRAND HOTEL,Lodging,$329.00,No
+10/8/2026,10/9/2026,0000,INFLIGHT WIFI,Internet,$12.99,Yes
+10/8/2026,10/10/2026,0000,CITYCAB HOUSTON,Travel,$52.10,No
+10/8/2026,10/10/2026,0000,GIFT SHOP HOU,Merchandise,$24.50,Yes`};
+const J=(b,st=200)=>new Response(JSON.stringify(b),{status:st,headers:{"Content-Type":"application/json"}});
+window.fetch=async(url,opt={})=>{
+  const u=new URL(url,location.href);
+  if(!u.pathname.startsWith("/api/")) return realFetch(url,opt);
+  if(u.pathname==="/api/config"){
+    const rr=true;
+    return J({user:{id:"demo",email:"demo.employee@scebrokerage.com",name:"Jordan Smith"},receiptReader:rr});
+  }
+  if(u.pathname==="/api/receipts/read"){
+    const nm=((opt.headers||{})["x-file-name"]||"").toLowerCase();
+    const K={"skyway":["SKYWAY AIRLINES","2026-10-06",412.40],"bayou":["BAYOU GRAND HOTEL","2026-10-08",329.00],"main-st":["MAIN ST GRILL","2026-10-07",186.30],"citycab":["CITYCAB HOUSTON","2026-10-07",48.60]};
+    const k=Object.keys(K).find(x=>nm.includes(x));
+    if(k){ await sleep(900); return J({merchant:K[k][0],date:K[k][1],total:K[k][2],currency:"USD"}); }
+    const s=await samp; if(!s) return J({error:"off"},404);
+    try{
+      const out=await s.json(`Read this receipt photo. Return ONLY JSON: {"merchant": string|null, "date": "YYYY-MM-DD"|null, "total": number|null (final amount incl. tax and tip), "currency": ISO code|null}.`,{images:[opt.body],modelTier:"quick"});
+      return J(out||{});
+    }catch(e){ return J({error:e&&e.code},502); }
+  }
+  if(u.pathname==="/api/reports"){ await sleep(700); P.files=[]; return J({token:"preview",folderName:P.folder,folderUrl:"#"}); }
+  if(u.pathname==="/api/reports/files"){ await sleep(350); const n=u.searchParams.get("name"); P.files.push({folder:u.searchParams.get("folder"),name:n,size:opt.body&&opt.body.size||0}); return J({id:"x",name:n}); }
+  if(u.pathname==="/api/reports/submit"){ await sleep(800); P.sub=JSON.parse(opt.body); setTimeout(()=>document.dispatchEvent(new Event("pv:submitted")),0); return J({ok:true,folderUrl:"#",folderName:P.folder}); }
+  return J({error:"Not in preview"},404);
+};
+})();
+</script>
+<script>
+(function(){
+"use strict";
+const LOGO_B64 = "iVBORw0KGgoAAAANSUhEUgAAAG4AAABtCAYAAABAz1RVAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAArtSURBVHgB7ZsJbBXHGcc/H/jC2DhQTGwOQwzhcIC6lCOAwhUEFSBwVQQFWkTAUGi5hBoESECQyiEkwJRSKAhzlEaFlqMRphAwuBhiaGxDDL4wvk984eP59na+z92Xfbv78HN49nrE/KTR252ZnT3++833zcw+B7A/EgjaHUcQcIkQjlOEcJwihOMUIRynCOE4RQjHKUI4ThHCcYoQjlOEcJwihOMUIRynCOE4RQjHKUI4ThHCcYoQjlOEcJwihOMUIRynCOE4RQjHKUI4ThHCcYoQjlOEcJwihOMUIRynCOE4RQjHKUI4ThHCcYoQjlOEcJwihOMUZzCQ7t27w7hx46Bnz56QlZUFjx8/hpqaGnN5QEAA/WJZc3MzbWNdTElJSZr23N3dwdfXF8rLyynpnQ+TTGVlJZSUlGjqyeeVycjIaLUOoj6vuk5xcTFUVVVBZ0WyJbGbkpggkpIzZ85Y1ImMjKT8w4cPm/PCw8Ol/Px83TaXLVtG9e/evatbjseqOXfunOTj42NxXWrS09OlefPm6V6bktOnT1vUUWMymaQDBw7Y9HxsSHbHphOjSMj06dOlgQMHShMnTqSkfjjMKqSGhgYpMDCwVeEuXbokVVdXU7vMKq0Kt2LFCmny5MnS7t27aX/Xrl0a4VB8rDN37lyprKxMYpYkMWvVCDdz5kyqhwmPBZVwiYmJ5vL4+HjKmzp1Kr/C3bp1S2Ld4hvr4MO5ceMG3eyxY8feKJyHhwc9YKyHbNiwwapwQ4YMof0+ffrQfmpqqkY4pfXIx+HDB5Vwbm5uVq8fefjwoXkfXxhk586dby2cYcFJZmYmsJuGmJgYYA8ZBgwYoFvPyckJoqKiYPny5RAUFGS1Pfbmk/86efIk+ZmQkBBoDQcHB/rV84dKvL29rZaxXgKYoJSU/lMP1mvQb1FREXRGbHpj8M1OTk628AE7duzQWBz6l1mzZpmt7ujRo7oWd+HCBeqWcPvq1atUX9m1gcJyFi5cKM2ePVs6ePAg7a9bt05jcZcvXyYLW7JkCXXXeB3qa1Oj11ViL4DWe/HiRbN1+/v7v7XFQTvQpgsIDg6WNm7cSDfIIkfJ09NTIxxuR0dHS3V1ddK+fft0hUMfdOjQIdoODQ2lh7Ry5Upd4WRYREkvC7NqjXAy6F/xOgYPHqwrHNbv3bs3JdDpKrOzs6U9e/bQ/d28eVPy8vKyh2jGCyensLAwulH0O6Aj3JQpU8w+Qy3cjBkzqCwuLo6OwV/k9u3busLJPg6s9ARqH6eX2urjtm/fTvubN2+2i3CGjePWrFkDpaWlwCItGpfNmTMH2FsJOTk5uvXZgwIW6cGoUaOgtrbWomzRokVQWFgIbNhgzmORIowfP578Tms+7G1gXSk0NjbSNp7nypUruvX27t0L69evh23btsGJEyegoqICOhs2vTFHjhyx6JKwK8FxGADoWhwm9DmI2uLy8vKks2fPWuTt37+f6i5durRdLU6J2g8qLQ7T1q1bKc8eUWVLWGVfbO5/0RrQgnA2gQUWwMZgILANQ4UT/HDEJDOnCOE4RQjHKYYu6yCOjo7Qr18/2i4oKNCE+oKOw+aQFqed2LjNHE7j1BKuFsjlGDarhww4taWeWtILzSMiIjShuRrl8INFt5phAE6xNTU10epFW+6rI5JhFoeTyteuXaNF0rVr1wKbzoIJEybQYqMaHLympaVROXvY4OfnR5O6anAALg+2X7x4oSnHwf2pU6fM+zj4twZOEKxevRo2bdoEL1++hHcBm94YeYJ3/vz5VuvIFodrXnIeDr4R5eKnct7QWlvqwbA6KS0OLYzNbNA12no/HZ0Ms7jRo0fT79OnT9tyGLBJaGDdF1moGuWnAnqfG+CxrdXByQA2xwlsNgbY/CJ0VgwTDucnERShNRYvXkzfpowYMYIePlsFAJPJpKmH85ky2BWrhcH1PDYtRdtYprcGiOdi1kzziRg4dVYME64tk6xsyYQsBRct0e8cP35ctx5ONsti6VlTQkICsKUe2rb20Q4u3KJP3bJlC0164++7gk19NFupJp+CSzJgg4/DRVGMKp89e6ZZSrGnjzt//jztY11cH2RW3qG+y9ZkWF/AHhD9slUC6sLYOhwsWLAAhg0bplsfo0WMGrEcrU4PNutPk9ZyUoPdrLJc7xM7tnBKv7j8gp82sAAF3hVsfmvU4zRk1apVuhaH+7LV5ebm6n5xpUT9IZIeyjGb3jjuzp07lKf8SKizJMNXB/Ctx7cfreHRo0eQkpJiUYYJx1vy+GzkyJEUPCjz8Hj1hzq4uHn//n3zvt64D/2g7AvlJSZlnnx+ZV5nQSzrcIqYZOYUIRynCOE4RQjHKYbNnPT/1A/GbtWOtf4+5bp5e/iyQTD814Mg5R8ZEP/H5xZ5EUvvQWVOy8dF74/9EUza+1NNW18tuAOmV7UWx8nUFNdCxs1c+O4vyZrjhi4aCEN+ORB8Ar2huUmCspTXELn+G6jIbjnfTzYGwQdz+8GDHbGQE1VAeYHz+0PwuuEWee2JYRbn0s0FuvXxAFOBCQofvTInJa5eXahO8G+HQldfd4s8NZjXUFlv0VaDqVHTVmFsMaT9KwuaG5phzO8/gmlh4yzaGRQSAB9/EQyOXZzgyZ+TICE8BRpZO67vuZrrpF/PprZGhH5ozhvKhMYQvSNEQwxfAU+7lgWJf7O+3lX8XRn0/MgHgj4bDDF/ePKmpiDz6zyIDXv+5vNdzaKH28XDGRZFz4a+0/wsykf9ZghIzRL8+7P7UJWr/7lgafJryI95RZbetbc7ODo7Qq9RPSDq8/9CR9HpfZwbe9PxIeEb3a1vV7AXaI3NDU3g5PL9I+jm7wFeAZ5Q+LjYqmgy8gsy/FeB1K1WF9RAzr2OsTbEcIvDbgkTEnfkucZi3Hu4wsMv4uHT4x9D0PJBUPOqzmpbP/7dMErW2kJ8BnmRRfX5pDe4+riSxcu4eLtY1O0xtDv5YqTkeTlZtEwB64rxhfKf4AvNjRKkR+RATUnHfS9juHAvWNeV96Dl/2Ilidpv/J3cnCDrTh4UxZbAsCWBzPnHWW0LH2zmrTyrbSFBLEhx9mi5bRQ34XSquayhutGirgv6Rf+uEBjSH1L/mWkhHPLkT0kw7dh4tm7nALfXfQMdieHCFX1bzB5KRqv10Hpmhk8Cvwm9rNYpZWK11tZ/tn1L0ejPI2awbrEb1Fc2mMvqXteT9bj/PxBCi8KEwumR+6CQfGVVrqnVrtXeGO7jnFydKOKTkzVyowvpIfYK7mFzW45d9G/v9ctKSPoyHT6Y05cCDJm6chaVshfJm/m598e05Dszi++MGG5xY7eNpCRzfck9EkgP7JpmnplktS0Mz5Uh+t2NMZD2VbZu3diwZ/DhLwJgzOcj4GrIbXM+RoZzvpwMP/vrJ8wyTeDi6QxlqZ3vL1GGrQ54Mt+hfNtlUDS523mPBQcYICi7PwwWcAyY+XUu1Fe0dHPoi/pP97epLWVeXxaguPVwg+zIfKgt+z7owRDff6IvePp5QB07B54fLVDt4xAc99VX1OuWtSdiWYdTxFwlpwjhOEUIxylCOE4RwnGKEI5ThHCcIoTjFCEcpwjhOMU5VArt4pdRb7cp8J0DwsW/7zsA56a08rPZUvNCsAcOgGv37iBod0RXySlCOE4RwnGKEI5ThHCcIoTjFCEcpwjhOEUIxylCOE4RwnGKEI5ThHCcIoTjFCEcpwjhOEUIxylCOE75H94PvAqm2baRAAAAAElFTkSuQmCC";
+
+/* ---------- state ---------- */
+let S = { items:[], tray:[], filter:"all", submitted:false };
+let CFG = { user:null, receiptReader:false };
+let uid = 1; const nid = () => "i" + (uid++);
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = n => (n<0?"-":"") + "$" + Math.abs(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const fmtDate = iso => { if(!iso) return ""; const [y,m,d]=iso.split("-"); return `${MON[+m-1]}-${d}-${y.slice(2)}`; };
+const store = { get(k){ try{return localStorage.getItem(k)}catch(e){return null} }, set(k,v){ try{localStorage.setItem(k,v)}catch(e){} } };
+
+/* ---------- CSV ---------- */
+function parseCSV(text){
+  const rows=[]; let row=[], f="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++} else q=false } else f+=c; }
+    else if(c==='"') q=true;
+    else if(c===','){ row.push(f); f=""; }
+    else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n') i++; row.push(f); rows.push(row); row=[]; f=""; }
+    else f+=c;
+  }
+  if(f!==""||row.length){ row.push(f); rows.push(row); }
+  return rows.filter(r=>r.some(x=>x.trim()!==""));
+}
+function toISO(s){
+  s=(s||"").trim(); let m;
+  if((m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/))){ let y=+m[3]; if(y<100) y+=2000; return `${y}-${String(m[1]).padStart(2,"0")}-${String(m[2]).padStart(2,"0")}`; }
+  if((m=s.match(/^(\d{4})-(\d{2})-(\d{2})/))) return `${m[1]}-${m[2]}-${m[3]}`;
+  const d=new Date(s); if(!isNaN(d)) return d.toISOString().slice(0,10);
+  return "";
+}
+const num = s => { const v=parseFloat(String(s||"").replace(/[$,\s]/g,"").replace(/^\((.*)\)$/,"-$1")); return isNaN(v)?0:v; };
+function itemsFromCSV(text){
+  const rows=parseCSV(text); if(rows.length<2) throw new Error("The file has no transactions.");
+  const H=rows[0].map(h=>h.trim().toLowerCase());
+  const col=(...names)=>{ for(const n of names){ const i=H.indexOf(n); if(i>=0) return i; } for(const n of names){ const i=H.findIndex(h=>h.includes(n)); if(i>=0) return i; } return -1; };
+  const cDate=col("transaction date","trans date","date"), cPost=col("posted date","post date"), cCard=col("card no.","card no","card number","card"),
+        cDesc=col("description","merchant","payee"), cCat=col("category"), cDeb=col("debit","amount"), cCred=col("credit"), cPers=col("personal");
+  if(cDate<0||cDesc<0||cDeb<0) throw new Error("Couldn't find the Date, Description and Debit/Amount columns. Check that this is the card statement download.");
+  const out=[];
+  for(const r of rows.slice(1)){
+    const amt=num(r[cDeb]); if(!amt) continue;
+    const pers=cPers>=0 ? /^y/i.test((r[cPers]||"").trim()) : false;
+    out.push({ id:nid(), source:"card", date:toISO(r[cDate]), posted:cPost>=0?toISO(r[cPost]):"", card:cCard>=0?(r[cCard]||"").trim():"",
+      merchant:(r[cDesc]||"").trim(), category:cCat>=0?(r[cCat]||"").trim():"", amount:amt, business:!pers,
+      description:"", counterparty:"", receipt:null });
+  }
+  if(!out.length) throw new Error("No charges found in that file.");
+  return out;
+}
+
+/* ---------- status ---------- */
+function issues(it){
+  if(!it.business) return [];
+  const p=[];
+  if(!it.description.trim()) p.push("Description");
+  if(!it.receipt) p.push("Receipt");
+  return p;
+}
+const needsCP = it => it.business && /dining|meal|restaurant|entertain/i.test(it.category) && !it.counterparty.trim();
+const sortItems = () => S.items.sort((a,b)=> (a.date||"").localeCompare(b.date||"") || a.merchant.localeCompare(b.merchant));
+const bizItems = () => S.items.filter(i=>i.business);
+
+/* ---------- render ---------- */
+function render(){ renderLines(); renderTray(); renderSummary(); }
+function renderSummary(){
+  const biz=bizItems(), tot=biz.reduce((s,i)=>s+i.amount,0), reimb=biz.filter(i=>i.source==="cash").reduce((s,i)=>s+i.amount,0);
+  const pers=S.items.filter(i=>!i.business&&i.source==="card").reduce((s,i)=>s+i.amount,0);
+  const ready=biz.filter(i=>!issues(i).length).length;
+  $("#sBiz").textContent=money(tot); $("#sReimb").textContent=money(reimb); $("#sPers").textContent=money(pers);
+  $("#sReady").textContent=`${ready} / ${biz.length}`;
+  const emp=$("#emp").value.trim(), missRc=biz.filter(i=>!i.receipt).length, missD=biz.filter(i=>!i.description.trim()).length;
+  const unm=S.tray.filter(t=>t.state!=="reading").length, cp=biz.filter(needsCP).length;
+  const ck=[
+    [!!emp, emp?`Employee: ${emp}`:"Add your name at the top"],
+    [biz.length>0, biz.length?`${biz.length} business ${biz.length===1?"line":"lines"} · ${money(tot)}`:"Mark at least one charge as Business"],
+    [!missD, missD?`${missD} business ${missD===1?"line needs":"lines need"} a description`:"Every business line has a description"],
+    [!missRc, missRc?`${missRc} business ${missRc===1?"line needs":"lines need"} a receipt`:"Every business line has a receipt"],
+  ];
+  if(cp) ck.push([false,`${cp} meal ${cp===1?"line has":"lines have"} no counterparty (who was it with?)`]);
+  if(unm) ck.push([false,`${unm} receipt${unm===1?"":"s"} in the tray not matched yet`]);
+  $("#checks").innerHTML=ck.map(([ok,t])=>`<div class="${ok?"ok":"no"}"><span class="i">${ok?"✓":"!"}</span><span>${esc(t)}</span></div>`).join("");
+}
+function renderLines(){
+  sortItems();
+  let list=S.items;
+  if(S.filter==="todo") list=list.filter(i=>issues(i).length||needsCP(i));
+  if(S.filter==="biz") list=list.filter(i=>i.business);
+  const el=$("#lines");
+  if(!S.items.length){ el.innerHTML=`<div class="empty">No charges yet. Import your card statement CSV, or add an out-of-pocket expense.</div>`; return; }
+  if(!list.length){ el.innerHTML=`<div class="empty">Nothing here. Everything in this view is done.</div>`; return; }
+  el.innerHTML=list.map(it=>{
+    const pills = pillsHTML(it);
+    const rc = it.receipt
+      ? `<button class="thumb" data-act="view" aria-label="View receipt" style="${it.receipt.isImg?`background-image:url('${it.receipt.url}')`:""}">${it.receipt.isImg?"":"PDF"}</button>`
+      : `<button class="attach" data-act="attach">Add receipt</button>`;
+    return `<div class="line ${it.business?"":"personal"}" data-id="${it.id}">
+      <div class="toggle"><div class="seg" role="group" aria-label="Business or personal">
+        <button class="biz" data-act="biz" aria-pressed="${it.business}">Business</button>
+        <button class="per" data-act="per" aria-pressed="${!it.business}">Personal</button></div></div>
+      <div class="what">
+        <span class="amt">${money(it.amount)}</span>
+        <span class="merchant">${esc(it.merchant)}</span>
+        <span class="sub"><span class="num">${esc(fmtDate(it.date))}</span>${it.category?`<span>${esc(it.category)}</span>`:""}${it.source==="cash"?`<span class="tag cash">Out-of-pocket</span>`:(it.card?`<span class="mono">•${esc(it.card)}</span>`:"")}</span>
+      </div>
+      <div class="inputs">
+        <input class="inp ${it.business&&!it.description.trim()?"need":""}" data-k="description" id="d_${it.id}" aria-label="Description for ${esc(it.merchant)}" placeholder="What was it for? e.g. Taxi to client dinner" value="${esc(it.description)}">
+        <input class="inp" data-k="counterparty" id="c_${it.id}" aria-label="Counterparty for ${esc(it.merchant)}" placeholder="Counterparty: company, trader name" value="${esc(it.counterparty)}">
+      </div>
+      <div class="persnote">Left off the report.</div>
+      <div class="rc">${rc}</div>
+      <div class="statusrow">${pills}</div>
+    </div>`;
+  }).join("");
+}
+function pillsHTML(it){
+  const iss=issues(it), cp=needsCP(it)?`<span class="pill quiet">Who was it with?</span>`:"";
+  const p = !it.business ? `<span class="pill quiet">Personal · not on report</span>`
+    : iss.length ? iss.map(x=>`<span class="pill warn">Needs ${x.toLowerCase()}</span>`).join("")+cp
+    : `<span class="pill ok">Ready</span>`+cp;
+  return p + (it.source==="cash"?`<button class="btn link" data-act="del">Delete</button>`:"");
+}
+function renderTray(){
+  const el=$("#tlist");
+  if(!S.tray.length){ el.innerHTML=""; return; }
+  const opts = it => `<option value="${it.id}">${esc(fmtDate(it.date))} · ${esc(money(it.amount))} · ${esc(it.merchant.slice(0,26))}</option>`;
+  const free = S.items.filter(i=>!i.receipt);
+  el.innerHTML=S.tray.map(t=>{
+    const ai=t.ai;
+    const read = t.state==="reading" ? `<span><span class="spin"></span> Reading receipt…</span>`
+      : ai ? `<span>${esc(ai.merchant||"Unknown merchant")} · ${esc(ai.date?fmtDate(ai.date):"no date")} · ${ai.total!=null?esc((ai.currency&&ai.currency!=="USD"?ai.currency+" ":"$")+Number(ai.total).toFixed(2)):"no total"}</span>`
+      : `<span>${esc(t.name)}</span>`;
+    const sel = `<select class="inp" data-tray="${t.id}" aria-label="Match ${esc(t.name)} to a charge"><option value="">Match to a charge…</option>${free.map(opts).join("")}</select>`;
+    return `<div class="titem" data-tid="${t.id}">
+      <button class="thumb" data-tact="view" aria-label="View ${esc(t.name)}" style="${t.isImg?`background-image:url('${t.url}')`:""}">${t.isImg?"":"PDF"}</button>
+      <div class="body"><div class="read">${read}</div>${t.state==="reading"?"":`${t.note?`<div class="read">${esc(t.note)}</div>`:""}${sel}
+        <div class="acts">${ai&&ai.total!=null?`<button class="btn small" data-tact="cash">Add as out-of-pocket</button>`:""}<button class="btn link" data-tact="drop">Remove</button></div>`}</div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------- receipts ---------- */
+async function prepFile(file){
+  const isImg=/^image\//.test(file.type) && !/svg/.test(file.type);
+  const isPdf=file.type==="application/pdf"||/\.pdf$/i.test(file.name);
+  if(!isImg && !isPdf) throw new Error(`${file.name} isn't an image or PDF.`);
+  let blob=file, ext=isPdf?"pdf":(file.type.split("/")[1]||"jpg").replace("jpeg","jpg");
+  if(isImg){
+    try{
+      const bmp=await createImageBitmap(file);
+      const k=Math.min(1,1800/Math.max(bmp.width,bmp.height));
+      const c=document.createElement("canvas"); c.width=Math.round(bmp.width*k); c.height=Math.round(bmp.height*k);
+      const g=c.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,c.width,c.height); g.drawImage(bmp,0,0,c.width,c.height);
+      blob=await new Promise(r=>c.toBlob(r,"image/jpeg",0.85)); ext="jpg";
+      return {name:file.name, blob, ext, isImg:true, url:URL.createObjectURL(blob), w:c.width, h:c.height};
+    }catch(e){ /* browser can't decode (e.g. HEIC) → keep original */ }
+  }
+  return {name:file.name, blob, ext, isImg:isImg&&ext!=="heic", url:URL.createObjectURL(blob)};
+}
+function attachTo(itemId, rec){
+  const it=S.items.find(i=>i.id===itemId); if(!it) return;
+  if(it.receipt) URL.revokeObjectURL(it.receipt.url);
+  it.receipt=rec;
+  if(!it.business) it.business=true;
+  if(rec.ai && !it.description.trim() && rec.ai.purpose) it.description=rec.ai.purpose;
+}
+
+/* Receipt reading (optional: Azure AI Document Intelligence behind /api/receipts/read) */
+async function readReceipt(t){
+  if(!CFG.receiptReader || !t.isImg) return null;
+  try{
+    const r=await fetch("/api/receipts/read",{method:"POST",body:t.blob,headers:{"Content-Type":"application/octet-stream","x-file-name":t.name}});
+    if(!r.ok) return null;
+    const out=await r.json(); if(out.total!=null) out.total=num(out.total); return out;
+  }catch(e){ return null; }
+}
+const norm = s => (s||"").toLowerCase().replace(/sumup|sq \*|tst\*|\*/g," ").replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(w=>w.length>2);
+function bestMatch(ai){
+  let best=null, bestScore=0;
+  for(const it of S.items){
+    if(it.receipt) continue;
+    let sc=0;
+    if(ai.total!=null){
+      const usd=!ai.currency||ai.currency==="USD", d=Math.abs(it.amount-ai.total);
+      if(usd){ if(d<0.015) sc+=60; else if(d<1) sc+=35; }
+      else { const r=it.amount/ai.total; if(r>0.8&&r<1.35) sc+=20; }
+    }
+    const a=norm(ai.merchant), b=norm(it.merchant);
+    if(a.length&&b.length){ const hit=a.filter(w=>b.some(x=>x.includes(w)||w.includes(x))).length; sc+=Math.min(30,hit*15); }
+    if(ai.date&&it.date){ const dd=Math.abs((new Date(ai.date)-new Date(it.date))/864e5); sc+= dd<1?15: dd<=3?10: dd<=7?4:0; }
+    if(it.business) sc+=3;
+    if(sc>bestScore){ bestScore=sc; best=it; }
+  }
+  return bestScore>=45?best:null;
+}
+async function addToTray(files){
+  for(const f of files){
+    let rec; try{ rec=await prepFile(f); }catch(e){ flash(e.message); continue; }
+    const t={...rec, id:nid(), state:"reading", ai:null, note:""};
+    S.tray.push(t); renderTray(); renderSummary();
+    t.ai=await readReceipt(t);
+    t.state="done";
+    if(t.ai){
+      const m=bestMatch(t.ai);
+      if(m){ attachTo(m.id,{...rec, ai:t.ai}); S.tray=S.tray.filter(x=>x!==t); flash(`Matched ${t.name} to ${m.merchant} (${money(m.amount)}). Check it looks right.`); render(); continue; }
+      t.note="No matching charge found. Pick one, or add it as out-of-pocket.";
+    }
+    render();
+  }
+}
+
+/* ---------- events ---------- */
+let rowTarget=null;
+$("#lines").addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]"); if(!b) return;
+  const id=b.closest(".line").dataset.id, it=S.items.find(i=>i.id===id);
+  const a=b.dataset.act;
+  if(a==="biz"||a==="per"){ it.business=a==="biz"; render(); }
+  else if(a==="attach"){ rowTarget=id; $("#rowFile").click(); }
+  else if(a==="view") openLB(it.receipt, `${fmtDate(it.date)} · ${money(it.amount)} · ${it.merchant}`, ()=>{ S.tray.push({...it.receipt,id:nid(),state:"done",ai:it.receipt.ai||null,note:""}); it.receipt=null; render(); });
+  else if(a==="del"){ S.items=S.items.filter(i=>i!==it); render(); }
+});
+$("#lines").addEventListener("input",e=>{
+  const k=e.target.dataset.k; if(!k) return;
+  const it=S.items.find(i=>i.id===e.target.closest(".line").dataset.id); it[k]=e.target.value;
+  e.target.classList.toggle("need", k==="description" && it.business && !it.description.trim());
+  e.target.closest(".line").querySelector(".statusrow").innerHTML=pillsHTML(it);
+  renderSummary();
+});
+// drag a file onto a row
+$("#lines").addEventListener("dragover",e=>{ const l=e.target.closest(".line"); if(!l) return; e.preventDefault(); document.querySelectorAll(".line.drop").forEach(x=>x!==l&&x.classList.remove("drop")); l.classList.add("drop"); });
+$("#lines").addEventListener("dragleave",e=>{ const l=e.target.closest(".line"); if(l&&!l.contains(e.relatedTarget)) l.classList.remove("drop"); });
+$("#lines").addEventListener("drop",async e=>{ const l=e.target.closest(".line"); if(!l) return; e.preventDefault(); l.classList.remove("drop");
+  const f=e.dataTransfer.files[0]; if(!f) return; try{ attachTo(l.dataset.id, await prepFile(f)); render(); }catch(err){ flash(err.message); } });
+$("#rowFile").addEventListener("change",async e=>{ const f=e.target.files[0]; e.target.value=""; if(!f||!rowTarget) return;
+  try{ attachTo(rowTarget, await prepFile(f)); render(); }catch(err){ flash(err.message); } });
+
+$("#tlist").addEventListener("change",e=>{
+  const tid=e.target.dataset.tray; if(!tid||!e.target.value) return;
+  const t=S.tray.find(x=>x.id===tid); attachTo(e.target.value,{name:t.name,blob:t.blob,ext:t.ext,isImg:t.isImg,url:t.url,ai:t.ai});
+  S.tray=S.tray.filter(x=>x!==t); render();
+});
+$("#tlist").addEventListener("click",e=>{
+  const b=e.target.closest("[data-tact]"); if(!b) return;
+  const t=S.tray.find(x=>x.id===b.closest(".titem").dataset.tid), a=b.dataset.tact;
+  if(a==="view") openLB(t,t.name,null);
+  else if(a==="drop"){ URL.revokeObjectURL(t.url); S.tray=S.tray.filter(x=>x!==t); render(); }
+  else if(a==="cash"){
+    const it={id:nid(),source:"cash",date:t.ai.date||new Date().toISOString().slice(0,10),posted:"",card:"",merchant:t.ai.merchant||"Out-of-pocket",
+      category:t.ai.category||"Other",amount:t.ai.total,business:true,description:t.ai.purpose||"",counterparty:"",receipt:null};
+    S.items.push(it); attachTo(it.id,{name:t.name,blob:t.blob,ext:t.ext,isImg:t.isImg,url:t.url,ai:t.ai});
+    S.tray=S.tray.filter(x=>x!==t);
+    if(t.ai.currency&&t.ai.currency!=="USD") flash(`That receipt is in ${t.ai.currency}. Change the amount to what you paid in USD.`);
+    render();
+  }
+});
+const dz=$("#dz");
+dz.addEventListener("click",e=>{ if(e.target.id!=="pickBtn") $("#trayFile").click(); });
+$("#pickBtn").addEventListener("click",()=>$("#trayFile").click());
+dz.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); $("#trayFile").click(); }});
+["dragenter","dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("over")}));
+["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("over")}));
+dz.addEventListener("drop",e=>addToTray([...e.dataTransfer.files]));
+$("#trayFile").addEventListener("change",e=>{ const fs=[...e.target.files]; e.target.value=""; addToTray(fs); });
+document.addEventListener("paste",e=>{ const fs=[...(e.clipboardData?.files||[])]; if(fs.length && !/input|textarea/i.test(document.activeElement?.tagName||"")){ e.preventDefault(); addToTray(fs); }});
+
+$("#importBtn").addEventListener("click",()=>$("#csvFile").click());
+$("#csvFile").addEventListener("change",async e=>{
+  const f=e.target.files[0]; e.target.value=""; if(!f) return;
+  try{
+    const items=itemsFromCSV(await f.text());
+    const keepCash = S.items.filter(i=>i.source==="cash");
+    const key=i=>`${i.date}|${i.amount}|${i.merchant}`; const have=new Set(S.items.map(key));
+    const fresh=items.filter(i=>!have.has(key(i)));
+    S.items=[...S.items.filter(i=>i.source==="card"),...keepCash,...fresh];
+    const ds=items.map(i=>i.date).filter(Boolean).sort();
+    if(!$("#period").value && ds.length){ const [y,m]=ds[ds.length-1].split("-"); $("#period").value=`${MON[+m-1]} ${y}`; }
+    flash(`Imported ${fresh.length} charge${fresh.length===1?"":"s"} from ${f.name}.`); render();
+  }catch(err){ flash(err.message); }
+});
+document.querySelectorAll(".filters button").forEach(b=>b.addEventListener("click",()=>{
+  S.filter=b.dataset.f; document.querySelectorAll(".filters button").forEach(x=>x.setAttribute("aria-pressed",x===b)); renderLines(); }));
+
+$("#addBtn").addEventListener("click",()=>{ $("#addForm").hidden=false; $("#aDate").value=new Date().toISOString().slice(0,10); $("#aAmt").focus(); });
+$("#addCancel").addEventListener("click",()=>{ $("#addForm").hidden=true; });
+$("#addForm").addEventListener("submit",e=>{
+  e.preventDefault(); const amt=num($("#aAmt").value);
+  if(!(amt>0)){ flash("Enter the amount you paid, in US dollars."); return; }
+  S.items.push({id:nid(),source:"cash",date:$("#aDate").value,posted:"",card:"",merchant:$("#aMer").value.trim()||"Out-of-pocket",category:$("#aCat").value,amount:amt,business:true,description:"",counterparty:"",receipt:null});
+  $("#addForm").reset(); $("#addForm").hidden=true; render();
+});
+
+/* lightbox */
+let lbDetach=null;
+function openLB(rec,title,onDetach){
+  $("#lbT").textContent=title;
+  $("#lbBody").innerHTML = rec.isImg ? `<img alt="Receipt" src="${rec.url}">` : `<div class="pdf">${esc(rec.name)}<br>PDF receipts are included in the download as-is.</div>`;
+  lbDetach=onDetach; $("#lbDetach").hidden=!onDetach; $("#lb").hidden=false; $("#lbClose").focus();
+}
+const closeLB=()=>{ $("#lb").hidden=true; };
+$("#lbClose").addEventListener("click",closeLB);
+$("#lb").addEventListener("click",e=>{ if(e.target.id==="lb") closeLB(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!$("#lb").hidden) closeLB(); });
+$("#lbDetach").addEventListener("click",()=>{ if(lbDetach) lbDetach(); closeLB(); });
+
+let flashT; function flash(t){ $("#exMsg").textContent=t; clearTimeout(flashT); }
+
+/* ---------- export ---------- */
+const xDate = iso => { const [y,m,d]=iso.split("-").map(Number); return new Date(Date.UTC(y,m-1,d)); };
+const safe = s => String(s).replace(/[\\/:*?"<>|]+/g," ").replace(/\s+/g," ").trim().slice(0,60);
+function receiptName(it,n){ return `${String(n).padStart(2,"0")} ${fmtDate(it.date)} ${it.amount.toFixed(2)} ${safe(it.merchant)}.${it.receipt.ext}`; }
+function baseName(){
+  const emp=$("#emp").value.trim()||"Employee", trip=$("#trip").value.trim(), per=$("#period").value.trim();
+  return ["Expense Report",emp,trip,per].filter(Boolean).map(safe).filter(Boolean).join(" - ");
+}
+async function buildWorkbook(withImages){
+  if(!window.ExcelJS) throw new Error("The Excel library didn't load. Reload the page and try again.");
+  const wb=new ExcelJS.Workbook(); wb.creator="SCE Expense Reports"; wb.created=new Date();
+  const biz=bizItems().slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const emp=$("#emp").value.trim(), trip=$("#trip").value.trim();
+  const F=(sz,b)=>({name:"Aptos",size:sz,bold:!!b});
+  const thin={style:"thin",color:{argb:"FF000000"}};
+
+  /* Sheet 1 — Danna's layout */
+  const ws=wb.addWorksheet("Expense Report",{views:[{showGridLines:false}],pageSetup:{orientation:"landscape",fitToPage:true,fitToWidth:1,fitToHeight:0}});
+  [8.78,2.78,26.11,24.55,44.78,37.11,24.78,20.78,8.78].forEach((w,i)=>ws.getColumn(i+1).width=w);
+  ws.getRow(3).height=30; ws.getRow(4).height=60; ws.getRow(5).height=49.9; ws.getRow(6).height=34.9; ws.getRow(7).height=73.15;
+  const logo=wb.addImage({base64:"data:image/png;base64,"+LOGO_B64,extension:"png"});
+  ws.addImage(logo,{tl:{col:2.25,row:1.3},ext:{width:150,height:148}});
+  ws.getCell("F4").value="EXPENSE REPORT"; ws.getCell("F4").font=F(22,true);
+  ws.getCell("F5").value="Employee Name: "+emp; ws.getCell("F5").font=F(22); ws.getCell("F5").border={bottom:{style:"medium",color:{argb:"FF000000"}}};
+  if(trip){ ws.getCell("F6").value="Trip / purpose: "+trip; ws.getCell("F6").font=F(14); ws.getCell("F6").alignment={vertical:"middle"}; }
+  const heads=["Date","Amount","Description","Counterparty (Company,Trader Name)","Total"];
+  heads.forEach((h,i)=>{ const c=ws.getRow(7).getCell(3+i); c.value=h; c.font=F(20,true); c.alignment={horizontal:"center",vertical:"middle",wrapText:true}; c.border={bottom:thin}; });
+  const nRows=Math.max(16,biz.length), first=8, last=first+nRows-1;
+  for(let r=first;r<=last;r++){
+    const row=ws.getRow(r); row.height=34.9; const it=biz[r-first];
+    const cD=row.getCell(3), cA=row.getCell(4), cE=row.getCell(5), cF=row.getCell(6), cG=row.getCell(7);
+    [cD,cA,cE,cF,cG].forEach(c=>{ c.font=F(16); c.alignment={horizontal:"center",vertical:"middle",wrapText:true}; });
+    cA.alignment={horizontal:"right",vertical:"middle"};
+    cD.numFmt="mmm-dd-yy"; cA.numFmt='"$"#,##0.00'; cG.numFmt='"$"#,##0.00_);\\("$"#,##0.00\\)';
+    if(it){
+      cD.value=xDate(it.date); cA.value=Math.round(it.amount*100)/100;
+      cE.value=it.description.trim()+(it.source==="cash"?" (out-of-pocket)":""); cF.value=it.counterparty.trim()||null;
+      cG.value={formula:`SUM(D${r})`,result:Math.round(it.amount*100)/100};
+    } else cG.value={formula:`SUM(D${r})`,result:0};
+  }
+  const tot=biz.reduce((s,i)=>s+i.amount,0), reimb=biz.filter(i=>i.source==="cash").reduce((s,i)=>s+i.amount,0);
+  const tr=last+1; ws.getRow(tr).height=34.9;
+  ws.getCell(`F${tr}`).value="Total"; ws.getCell(`F${tr}`).font=F(20,true); ws.getCell(`F${tr}`).alignment={horizontal:"right",vertical:"middle"};
+  ws.getCell(`G${tr}`).value={formula:`SUM(G${first}:G${last})`,result:Math.round(tot*100)/100};
+  ws.getCell(`G${tr}`).font=F(20,true); ws.getCell(`G${tr}`).alignment={horizontal:"center",vertical:"middle"}; ws.getCell(`G${tr}`).numFmt='"$"#,##0.00_);\\("$"#,##0.00\\)';
+  ws.getCell(`G${tr}`).border={top:thin};
+  if(reimb>0){
+    const r1=tr+1, r2=tr+2;
+    ws.getCell(`F${r1}`).value="Charged to company card"; ws.getCell(`G${r1}`).value=Math.round((tot-reimb)*100)/100;
+    ws.getCell(`F${r2}`).value="Reimburse to employee";   ws.getCell(`G${r2}`).value=Math.round(reimb*100)/100;
+    [r1,r2].forEach(r=>{ ws.getRow(r).height=26; ws.getCell(`F${r}`).font=F(14); ws.getCell(`F${r}`).alignment={horizontal:"right",vertical:"middle"};
+      ws.getCell(`G${r}`).font=F(14,r===r2); ws.getCell(`G${r}`).numFmt='"$"#,##0.00'; ws.getCell(`G${r}`).alignment={horizontal:"center",vertical:"middle"}; });
+  }
+  ws.pageSetup.printArea=`B2:H${tr+3}`;
+
+  /* Sheet 2 — the card statement, reconciled */
+  const cs=wb.addWorksheet("Card Statement",{views:[{state:"frozen",ySplit:1}]});
+  cs.columns=[{header:"Line",key:"n",width:6},{header:"Transaction Date",key:"d",width:16},{header:"Posted Date",key:"p",width:14},{header:"Card No.",key:"c",width:10},
+    {header:"Merchant",key:"m",width:30},{header:"Category",key:"cat",width:14},{header:"Amount",key:"a",width:12},{header:"Business / Personal",key:"bp",width:18},
+    {header:"Paid with",key:"pw",width:16},{header:"Description",key:"desc",width:32},{header:"Counterparty",key:"cp",width:28},{header:"Receipt file",key:"rf",width:46}];
+  const lineNo=new Map(biz.map((it,i)=>[it.id,i+1]));
+  S.items.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(it=>{
+    const n=lineNo.get(it.id)||null;
+    const row=cs.addRow({n,d:it.date?xDate(it.date):null,p:it.posted?xDate(it.posted):null,c:it.card,m:it.merchant,cat:it.category,a:it.amount,
+      bp:it.business?"Business":"Personal",pw:it.source==="cash"?"Out-of-pocket":"Company card",desc:it.business?it.description:"",cp:it.business?it.counterparty:"",
+      rf:it.business&&it.receipt?receiptName(it,n):(it.business?"MISSING":"")});
+    if(!it.business) row.font={color:{argb:"FF7A7A7A"}};
+    if(it.business&&!it.receipt) row.getCell("rf").font={color:{argb:"FFB00020"},bold:true};
+  });
+  cs.getRow(1).font={bold:true}; cs.getRow(1).fill={type:"pattern",pattern:"solid",fgColor:{argb:"FFE5F5E1"}};
+  ["d","p"].forEach(k=>cs.getColumn(k).numFmt="mm/dd/yyyy"); cs.getColumn("a").numFmt='"$"#,##0.00';
+  cs.autoFilter={from:"A1",to:"L1"};
+  const pers=S.items.filter(i=>!i.business&&i.source==="card").reduce((s,i)=>s+i.amount,0);
+  cs.addRow([]);
+  [["Business total",tot],["Personal charges on company card",pers]].forEach(([l,v])=>{ const r=cs.addRow({m:l,a:Math.round(v*100)/100}); r.font={bold:true}; });
+
+  /* Sheet 3 — receipt images (download copy only; in SharePoint the receipts sit beside the report) */
+  if(!withImages) return wb;
+  const rs=wb.addWorksheet("Receipts",{views:[{showGridLines:false}]});
+  rs.getColumn(1).width=4; rs.getColumn(2).width=90;
+  let row=2;
+  for(const it of biz){
+    if(!it.receipt) continue;
+    const n=lineNo.get(it.id);
+    const c=rs.getCell(`B${row}`); c.value=`Line ${n} · ${fmtDate(it.date)} · ${money(it.amount)} · ${it.merchant}${it.description?` · ${it.description}`:""}`; c.font={bold:true,size:12};
+    row++;
+    if(it.receipt.isImg && it.receipt.ext==="jpg"){
+      const buf=await it.receipt.blob.arrayBuffer();
+      const id=wb.addImage({buffer:buf,extension:"jpeg"});
+      const w=it.receipt.w||600, h=it.receipt.h||800, k=Math.min(1,520/w), ph=Math.round(h*k);
+      rs.addImage(id,{tl:{col:1,row:row-1},ext:{width:Math.round(w*k),height:ph}});
+      row+=Math.ceil(ph/20)+2;
+    } else { rs.getCell(`B${row}`).value=`See ${receiptName(it,n)} alongside this report.`; row+=2; }
+  }
+  if(row===2) rs.getCell("B2").value="No receipts attached.";
+  return wb;
+}
+async function saveLocal(filename,blob){
+  try{ const d=window.claude&&await window.claude.use("downloads"); if(d){ await d.save({filename,data:blob}); return; } }catch(e){ if(e&&e.code==="declined") return; }
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000);
+}
+const showErr = t => { const e=$("#exErr"); e.textContent=t||""; e.hidden=!t; };
+function preflight(){
+  showErr("");
+  const biz=bizItems();
+  if(!biz.length){ showErr("Mark at least one charge as Business first."); return false; }
+  if(!$("#emp").value.trim()){ showErr("Your name didn't load from your Microsoft account. Reload the page."); return false; }
+  const noDesc=biz.filter(i=>!i.description.trim()).length;
+  if(noDesc){ showErr(`Add a description to ${noDesc} business ${noDesc===1?"line":"lines"} before submitting.`); S.filter="todo"; syncFilter(); renderLines(); return false; }
+  if(S.tray.some(t=>t.state==="reading")){ showErr("Wait for the receipts to finish reading."); return false; }
+  return true;
+}
+function syncFilter(){ document.querySelectorAll(".filters button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.f===S.filter)); }
+$("#dlXlsx").addEventListener("click",async()=>{
+  if(!preflight()) return; const b=$("#dlXlsx"); b.disabled=true; flash("Building the Excel file…");
+  try{ const wb=await buildWorkbook(true); const buf=await wb.xlsx.writeBuffer(); saveLocal(baseName()+".xlsx",new Blob([buf])); flash("Downloaded a copy for your records."); }
+  catch(e){ showErr(e.message||String(e)); } finally{ b.disabled=false; }
+});
+
+async function api(method,url,body,headers={}){
+  const r=await fetch(url,{method,body,headers,credentials:"same-origin"});
+  let j=null; try{ j=await r.json(); }catch(e){}
+  if(r.status===401){ throw new Error("Your sign-in expired. Reload the page to sign in again; your report stays on screen until you do."); }
+  if(!r.ok) throw new Error((j&&j.error)||`The server returned an error (${r.status}).`);
+  return j;
+}
+let submitting=false;
+$("#submitBtn").addEventListener("click",async()=>{
+  if(submitting||!preflight()) return;
+  const biz=bizItems().slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const missing=biz.filter(i=>!i.receipt).length;
+  const btn=$("#submitBtn");
+  if(missing && btn.dataset.confirm!=="1"){
+    btn.dataset.confirm="1"; btn.textContent="Submit without all receipts";
+    showErr(`${missing} business ${missing===1?"line has":"lines have"} no receipt. Add ${missing===1?"it":"them"}, or explain in the note and press Submit again.`);
+    return;
+  }
+  submitting=true; btn.disabled=true; $("#dlXlsx").disabled=true; showErr("");
+  try{
+    flash("Building the Excel report…");
+    const wb=await buildWorkbook(false); const xbuf=await wb.xlsx.writeBuffer();
+    flash("Creating your report folder in SharePoint…");
+    const rep=await api("POST","/api/reports","{}",{"Content-Type":"application/json"});
+    const H={"x-report-token":rep.token,"Content-Type":"application/octet-stream"};
+    const xname=baseName()+".xlsx";
+    const x=await api("PUT",`/api/reports/files?folder=report&name=${encodeURIComponent(xname)}`,new Blob([xbuf]),H);
+    const withRc=biz.filter(i=>i.receipt); let k=0;
+    for(const it of biz){
+      if(!it.receipt) continue;
+      k++; flash(`Uploading receipt ${k} of ${withRc.length}…`);
+      await api("PUT",`/api/reports/files?folder=receipts&name=${encodeURIComponent(receiptName(it,biz.indexOf(it)+1))}`,it.receipt.blob,H);
+    }
+    flash("Emailing Danna…");
+    const pers=S.items.filter(i=>!i.business&&i.source==="card").reduce((s,i)=>s+i.amount,0);
+    const done=await api("POST","/api/reports/submit",JSON.stringify({
+      token:rep.token, xlsxItemId:x.id, xlsxName:x.name, trip:$("#trip").value.trim(), period:$("#period").value.trim(),
+      note:$("#note").value.trim(), personal:Math.round(pers*100)/100,
+      lines:biz.map((it,i)=>({n:i+1,date:it.date,dateLabel:fmtDate(it.date),amount:it.amount,description:it.description.trim(),counterparty:it.counterparty.trim(),merchant:it.merchant,source:it.source,receipt:!!it.receipt}))
+    }),{"Content-Type":"application/json"});
+    S.submitted=true;
+    $("#exForm").hidden=true; $("#exDone").hidden=false;
+    $("#doneText").innerHTML=`Danna has your report (${esc(money(biz.reduce((s,i)=>s+i.amount,0)))}, ${biz.length} ${biz.length===1?"line":"lines"}). A copy of the email is in your inbox. Files are in <a href="${esc(done.folderUrl)}" target="_blank" rel="noopener">${esc(done.folderName)}</a> in SharePoint.`;
+    $("#exDone").scrollIntoView({behavior:"smooth",block:"center"});
+  }catch(e){
+    showErr(e.message||String(e)); flash("Nothing was emailed. Fix the problem above and submit again.");
+  }finally{ submitting=false; btn.disabled=false; $("#dlXlsx").disabled=false; btn.dataset.confirm=""; btn.textContent="Submit to Danna"; }
+});
+$("#newReport").addEventListener("click",()=>{
+  S.items.forEach(i=>i.receipt&&URL.revokeObjectURL(i.receipt.url)); S.items=[]; S.tray=[]; S.submitted=false;
+  ["#trip","#period","#note"].forEach(s=>$(s).value=""); $("#exForm").hidden=false; $("#exDone").hidden=true; flash(""); render();
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+window.addEventListener("beforeunload",e=>{ if(!S.submitted && S.items.some(i=>i.business)){ e.preventDefault(); e.returnValue=""; } });
+
+/* ---------- boot ---------- */
+render();
+(async()=>{
+  try{
+    const c=await api("GET","/api/config");
+    CFG=c; $("#emp").value=c.user.name; $("#whoName").textContent=c.user.email||c.user.name;
+    if(c.receiptReader){ const n=$("#aiNote"); n.classList.add("on"); n.textContent="Receipts you drop here are read automatically and matched to the right charge. Check each match before you submit."; }
+    render();
+  }catch(e){ $("#whoName").textContent="not signed in"; showErr(e.message); }
+})();
+window.__sce={S,buildWorkbook,attachTo,prepFile,bestMatch,render};
+})();
+</script>
+<script>
+(function(){
+const $=s=>document.querySelector(s), P=window.__PV;
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money=n=>"$"+Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const NOTES={"SKYWAY AIRLINES":["Flight to Houston office",""],"MAIN ST GRILL":["Client dinner","Gulf Coast Gas, two traders"],"BAYOU GRAND HOTEL":["Hotel, 1 night",""]};
+function loadExample(){
+  const inp=$("#csvFile"), dt=new DataTransfer(); dt.items.add(new File([P.csv],"demo_transaction_download.csv",{type:"text/csv"}));
+  inp.files=dt.files; inp.dispatchEvent(new Event("change"));
+  const t0=Date.now(), iv=setInterval(()=>{ const S=window.__sce&&window.__sce.S; if(S&&S.items.length){ clearInterval(iv);
+    S.items.forEach(i=>{ if(i.business&&NOTES[i.merchant]){ i.description=NOTES[i.merchant][0]; i.counterparty=NOTES[i.merchant][1]; } }); $("#trip").value="Houston office visit"; window.__sce.render(); }
+    else if(Date.now()-t0>5000) clearInterval(iv); },50);
+}
+(function wait(){ if($("#emp").value) loadExample(); else setTimeout(wait,100); })();
+$("#dlAfter").addEventListener("click",()=>{ document.querySelector('#dlXlsx').click(); });
+$("#pvBlank").addEventListener("click",()=>{ $("#newReport").click(); });
+document.addEventListener("pv:submitted",()=>{
+  const b=P.sub, lines=b.lines, total=lines.reduce((s,l)=>s+l.amount,0), reimb=lines.filter(l=>l.source==="cash").reduce((s,l)=>s+l.amount,0), miss=lines.filter(l=>!l.receipt).length;
+  const rep=P.files.filter(f=>f.folder==="report"), rc=P.files.filter(f=>f.folder==="receipts");
+  const tree=["Finance › Documents","└─ Reimbursements",`   └─ ${P.y}`,`      └─ ${P.ym}`,`         └─ ${P.folder}`,"            ├─ Expense Reports",...rep.map((f,i)=>`            │  ${i===rep.length-1?"└─":"├─"} ${f.name}`),"            └─ Receipts",...(rc.length?rc.map((f,i)=>`               ${i===rc.length-1?"└─":"├─"} ${f.name}`):["               (no receipts attached)"])].join("\n");
+  const rows=lines.map(l=>`<tr><td>${l.n}</td><td>${esc(l.dateLabel)}</td><td style="text-align:right">${money(l.amount)}</td><td>${esc(l.description)}</td><td>${esc(l.counterparty)}</td><td>${esc(l.merchant)}</td><td>${l.source==="cash"?"Out-of-pocket":"Card"}</td><td>${l.receipt?"Yes":'<b style="color:var(--bad)">Missing</b>'}</td></tr>`).join("");
+  let box=$("#danna"); if(!box){ box=document.createElement("div"); box.id="danna"; box.className="danna"; $("#exPanel").appendChild(box); }
+  box.hidden=false;
+  setTimeout(()=>{ $("#exDone h3").textContent="Demo: nothing was sent"; $("#doneText").textContent="In the real app, the employee sees a confirmation here and Danna gets the email. Below is exactly what she would get."; },60);
+  box.innerHTML=`<span class="eyebrow">Demo · what Danna receives</span>
+  <div class="mail"><div class="mail-h">
+    <span><b>From:</b> SCE Expenses &lt;expenses@scebrokerage.com&gt;</span>
+    <span><b>To:</b> Danna (Finance) · <b>Cc:</b> demo.employee@scebrokerage.com · <b>Reply-to:</b> Jordan Smith</span>
+    <span><b>Subject:</b> Expense report: Jordan Smith${b.trip?` – ${esc(b.trip)}`:""} – ${money(total)}</span>
+    ${rep.length?`<span><span class="att">Attachment: ${esc(rep[0].name)}</span></span>`:""}
+  </div><div class="mail-b">
+    <p>Jordan Smith submitted an expense report${b.trip?` for <b>${esc(b.trip)}</b>`:""}${b.period?` (${esc(b.period)})`:""}.</p>
+    <p><b>Total: ${money(total)}</b>${reimb?` · Reimburse to employee: <b>${money(reimb)}</b>`:""}${b.personal?` · Personal charges on company card: ${money(b.personal)}`:""}${miss?` · <span style="color:var(--bad)">${miss} line(s) without a receipt</span>`:""}</p>
+    <p><u>Open the report folder in SharePoint</u> (Excel report and all receipts)</p>
+    <table><tr><th>#</th><th>Date</th><th>Amount</th><th>Description</th><th>Counterparty</th><th>Merchant</th><th>Paid with</th><th>Receipt</th></tr>${rows}</table>
+    ${b.note?`<p><b>Note from Jordan Smith:</b> ${esc(b.note)}</p>`:""}
+  </div></div>
+  <h3>SharePoint folder</h3>
+  <div class="tree">${esc(tree)}</div>
+  <p class="msg">Use "Download a copy (.xlsx)" to open the Excel report exactly as Danna would get it.</p>`;
+  $("#dlXlsx").hidden=false;
+});
+$("#newReport").addEventListener("click",()=>{ const d=$("#danna"); if(d) d.hidden=true; });
+})();
+</script>
+</body>
+</html>
