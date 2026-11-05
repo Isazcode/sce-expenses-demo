@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SCE Expense Reports</title>
 <meta name="robots" content="noindex">
-<title>SCE Expense Reports · Demo</title>
+<link rel="icon" href="data:image/png;base64,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">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
@@ -181,33 +182,36 @@ textarea.inp{resize:vertical;min-height:64px;font:inherit}
 .done h3{font-size:18px}
 .done a{color:inherit;font-weight:600}
 .progress{font-size:13px;color:var(--muted)}
+.gate{min-height:70vh;display:grid;place-items:center}
+.gate-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px 24px;display:grid;gap:14px;justify-items:start;max-width:440px;width:100%}
+.gate-card .logo{width:56px;height:56px}
+.gate-card p{margin:0;color:var(--muted)}
+.ms{display:inline-flex;gap:10px;align-items:center}
+.ms i{display:grid;grid-template-columns:8px 8px;gap:2px}
+.ms i b{width:8px;height:8px;display:block}
 .errbox{background:var(--bad-bg);color:var(--bad);border-radius:8px;padding:10px 12px;font-size:14px}
-.pv{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 14px;font-size:14px}
-.pv .sp{flex:1 1 240px;min-width:0}
-.danna{display:grid;gap:16px;padding:16px;border-top:1px solid var(--line)}
-.danna h3{font-size:16px}
-.mail{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
-.mail-h{padding:10px 14px;border-bottom:1px solid var(--line);display:grid;gap:3px;font-size:13px;background:var(--bg)}
-.mail-h b{font-weight:600}
-.mail-b{padding:14px;overflow-x:auto;font-size:14px}
-.mail-b table{border-collapse:collapse;font-size:13px}
-.mail-b th,.mail-b td{border:1px solid var(--line);padding:6px 8px;text-align:left;white-space:nowrap}
-.mail-b th{background:var(--ok-bg);color:var(--ok)}
-.att{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:12.5px;margin-top:4px}
-.tree{font-family:var(--f-mono);font-size:12.5px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;white-space:pre;line-height:1.6}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="pv"><span class="sp"><b>Demo.</b> Sample data for a made-up employee. Nothing is sent or saved. Drag the <a href="samples/" style="color:inherit;font-weight:600">sample receipts</a> into the Receipts box to see them matched, then press Submit to see what Danna receives. In the real app, people sign in with their SCE Microsoft account.</span><button class="btn small" id="pvBlank">Start a blank report</button></div>
+<div class="wrap gate" id="gate">
+  <div class="gate-card">
+    <img class="logo" alt="Snapper Creek Energy" src="data:image/png;base64,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">
+    <h1>Expense Report</h1>
+    <p id="gateMsg">Sign in with your SCE Microsoft account to start a report. Your report is emailed to Danna from your own Outlook.</p>
+    <button class="btn primary ms" id="signIn"><i aria-hidden="true"><b style="background:#f25022"></b><b style="background:#7fba00"></b><b style="background:#00a4ef"></b><b style="background:#ffb900"></b></i>Sign in with Microsoft</button>
+    <div class="errbox" id="gateErr" hidden></div>
+    <a class="btn link" href="demo/" style="padding-left:0">See how it works in the demo</a>
+  </div>
+</div>
+<div class="wrap" id="app" hidden>
   <header class="head">
     <img class="logo" alt="Snapper Creek Energy" src="data:image/png;base64,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">
     <div class="head-text">
       <span class="eyebrow">Snapper Creek Energy · Finance</span>
       <h1>Expense Report</h1>
-      <p>Import your card statement, mark what's business, add a receipt to each charge, and submit. Your report and receipts go straight to Danna in SharePoint.</p>
+      <p>Import your card statement, mark what's business, add a receipt to each charge, and submit. Danna gets an email from you with the Excel report and every receipt attached.</p>
     </div>
-    <div class="who" id="who"><span>Signed in as <b id="whoName">…</b></span><a class="btn link" href="/.auth/logout?post_logout_redirect_uri=/">Sign out</a></div>
+    <div class="who" id="who"><span>Signed in as <b id="whoName">…</b></span><button class="btn link" id="signOut">Sign out</button></div>
   </header>
 
   <section class="meta" aria-label="Report details">
@@ -268,7 +272,7 @@ textarea.inp{resize:vertical;min-height:64px;font:inherit}
           <li><b>Mark</b> each charge Business or Personal.</li>
           <li><b>Describe</b> each business charge and who it was with.</li>
           <li><b>Attach</b> a receipt: drop it on the charge, or in the tray to have it matched.</li>
-          <li><b>Submit</b>. Danna gets an email with the report attached and a link to your receipts in SharePoint.</li>
+          <li><b>Submit</b>. Danna gets an email from you with the report and receipts attached. A copy stays in your Sent Items.</li>
         </ol>
       </div>
     </aside>
@@ -286,14 +290,14 @@ textarea.inp{resize:vertical;min-height:64px;font:inherit}
           <button class="btn primary" id="submitBtn">Submit to Danna</button>
           <button class="btn" id="dlXlsx">Download a copy (.xlsx)</button>
         </div>
-        <div class="msg" id="exMsg">Submitting saves the Excel report and every receipt to the Reimbursements folder in SharePoint and emails Danna a link. You get a copy of the email.</div>
+        <div class="msg" id="exMsg">Submitting emails Danna from your Outlook with the Excel report and every receipt attached. A copy stays in your Sent Items, and the files are filed in SharePoint automatically.</div>
         <div class="errbox" id="exErr" hidden></div>
       </div>
     </div>
     <div class="done" id="exDone" hidden>
       <h3>Submitted to Danna</h3>
       <div id="doneText"></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" id="newReport">Start a new report</button><button class="btn small" id="dlAfter">Download a copy (.xlsx)</button></div>
+      <div><button class="btn small" id="newReport">Start a new report</button></div>
     </div>
   </section>
 </div>
@@ -305,47 +309,9 @@ textarea.inp{resize:vertical;min-height:64px;font:inherit}
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
-<script>
-/* ---- Preview only: stands in for Microsoft sign-in, SharePoint and email ---- */
-(function(){
-const realFetch=window.fetch.bind(window), sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const samp=(window.claude&&window.claude.use)?window.claude.use("sample").catch(()=>null):Promise.resolve(null);
-const _d=new Date(), P=window.__PV={files:[],folder:`J. Smith ${_d.getMonth()+1}.${_d.getDate()}`,ym:`${_d.getMonth()+1}.${_d.getFullYear()}`,y:String(_d.getFullYear()),csv:`Transaction Date,Posted Date,Card No.,Description,Category,Debit,Personal
-10/6/2026,10/7/2026,0000,SKYWAY AIRLINES,Airfare,$412.40,No
-10/7/2026,10/8/2026,0000,AIRPORT NEWS & COFFEE,Dining,$9.75,Yes
-10/7/2026,10/8/2026,0000,CITYCAB HOUSTON,Travel,$48.60,No
-10/7/2026,10/9/2026,0000,MAIN ST GRILL,Dining,$186.30,No
-10/8/2026,10/9/2026,0000,BAYOU GRAND HOTEL,Lodging,$329.00,No
-10/8/2026,10/9/2026,0000,INFLIGHT WIFI,Internet,$12.99,Yes
-10/8/2026,10/10/2026,0000,CITYCAB HOUSTON,Travel,$52.10,No
-10/8/2026,10/10/2026,0000,GIFT SHOP HOU,Merchandise,$24.50,Yes`};
-const J=(b,st=200)=>new Response(JSON.stringify(b),{status:st,headers:{"Content-Type":"application/json"}});
-window.fetch=async(url,opt={})=>{
-  const u=new URL(url,location.href);
-  if(!u.pathname.startsWith("/api/")) return realFetch(url,opt);
-  if(u.pathname==="/api/config"){
-    const rr=true;
-    return J({user:{id:"demo",email:"demo.employee@scebrokerage.com",name:"Jordan Smith"},receiptReader:rr});
-  }
-  if(u.pathname==="/api/receipts/read"){
-    const nm=((opt.headers||{})["x-file-name"]||"").toLowerCase();
-    const K={"skyway":["SKYWAY AIRLINES","2026-10-06",412.40],"bayou":["BAYOU GRAND HOTEL","2026-10-08",329.00],"main-st":["MAIN ST GRILL","2026-10-07",186.30],"citycab":["CITYCAB HOUSTON","2026-10-07",48.60]};
-    const k=Object.keys(K).find(x=>nm.includes(x));
-    if(k){ await sleep(900); return J({merchant:K[k][0],date:K[k][1],total:K[k][2],currency:"USD"}); }
-    const s=await samp; if(!s) return J({error:"off"},404);
-    try{
-      const out=await s.json(`Read this receipt photo. Return ONLY JSON: {"merchant": string|null, "date": "YYYY-MM-DD"|null, "total": number|null (final amount incl. tax and tip), "currency": ISO code|null}.`,{images:[opt.body],modelTier:"quick"});
-      return J(out||{});
-    }catch(e){ return J({error:e&&e.code},502); }
-  }
-  if(u.pathname==="/api/reports"){ await sleep(700); P.files=[]; return J({token:"preview",folderName:P.folder,folderUrl:"#"}); }
-  if(u.pathname==="/api/reports/files"){ await sleep(350); const n=u.searchParams.get("name"); P.files.push({folder:u.searchParams.get("folder"),name:n,size:opt.body&&opt.body.size||0}); return J({id:"x",name:n}); }
-  if(u.pathname==="/api/reports/submit"){ await sleep(800); P.sub=JSON.parse(opt.body); setTimeout(()=>document.dispatchEvent(new Event("pv:submitted")),0); return J({ok:true,folderUrl:"#",folderName:P.folder}); }
-  return J({error:"Not in preview"},404);
-};
-})();
-</script>
+<script src="config.js"></script>
+<script src="vendor/msal-browser-5.25.1.min.js"></script>
+<script src="vendor/exceljs-4.4.0.min.js"></script>
 <script>
 (function(){
 "use strict";
@@ -354,6 +320,7 @@ const LOGO_B64 = "iVBORw0KGgoAAAANSUhEUgAAAG4AAABtCAYAAABAz1RVAAAACXBIWXMAAAsTAA
 /* ---------- state ---------- */
 let S = { items:[], tray:[], filter:"all", submitted:false };
 let CFG = { user:null, receiptReader:false };
+const C = window.SCE_CONFIG || {};
 let uid = 1; const nid = () => "i" + (uid++);
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -519,15 +486,8 @@ function attachTo(itemId, rec){
   if(rec.ai && !it.description.trim() && rec.ai.purpose) it.description=rec.ai.purpose;
 }
 
-/* Receipt reading (optional: Azure AI Document Intelligence behind /api/receipts/read) */
-async function readReceipt(t){
-  if(!CFG.receiptReader || !t.isImg) return null;
-  try{
-    const r=await fetch("/api/receipts/read",{method:"POST",body:t.blob,headers:{"Content-Type":"application/octet-stream","x-file-name":t.name}});
-    if(!r.ok) return null;
-    const out=await r.json(); if(out.total!=null) out.total=num(out.total); return out;
-  }catch(e){ return null; }
-}
+/* No automatic receipt reading in this version: receipts are matched with the dropdown. */
+async function readReceipt(t){ return null; }
 const norm = s => (s||"").toLowerCase().replace(/sumup|sq \*|tst\*|\*/g," ").replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(w=>w.length>2);
 function bestMatch(ai){
   let best=null, bestScore=0;
@@ -756,8 +716,7 @@ async function buildWorkbook(withImages){
   if(row===2) rs.getCell("B2").value="No receipts attached.";
   return wb;
 }
-async function saveLocal(filename,blob){
-  try{ const d=window.claude&&await window.claude.use("downloads"); if(d){ await d.save({filename,data:blob}); return; } }catch(e){ if(e&&e.code==="declined") return; }
+function saveLocal(filename,blob){
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename;
   document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000);
 }
@@ -779,12 +738,63 @@ $("#dlXlsx").addEventListener("click",async()=>{
   catch(e){ showErr(e.message||String(e)); } finally{ b.disabled=false; }
 });
 
-async function api(method,url,body,headers={}){
-  const r=await fetch(url,{method,body,headers,credentials:"same-origin"});
-  let j=null; try{ j=await r.json(); }catch(e){}
-  if(r.status===401){ throw new Error("Your sign-in expired. Reload the page to sign in again; your report stays on screen until you do."); }
-  if(!r.ok) throw new Error((j&&j.error)||`The server returned an error (${r.status}).`);
-  return j;
+/* ---------- Microsoft sign-in and Graph ---------- */
+const SCOPES=["User.Read","Mail.Send"];
+const GRAPH="https://graph.microsoft.com/v1.0";
+let pca=null, account=null;
+const showGateErr=t=>{ const e=$("#gateErr"); e.textContent=t||""; e.hidden=!t; };
+async function token(){
+  try{ return (await pca.acquireTokenSilent({scopes:SCOPES,account})).accessToken; }
+  catch(e){
+    if(e instanceof msal.InteractionRequiredAuthError || /interaction_required|login_required|consent_required/.test(e.errorCode||"")){
+      try{ return (await pca.acquireTokenPopup({scopes:SCOPES,account})).accessToken; }
+      catch(p){ throw new Error("Your Microsoft sign-in needs to be refreshed and the sign-in window was blocked. Allow pop-ups for this site and press Submit again."); }
+    }
+    throw e;
+  }
+}
+async function graph(method,path,body,extra={}){
+  const t=await token();
+  const h={Authorization:"Bearer "+t,...extra};
+  if(body!==undefined && !(body instanceof Blob)){ h["Content-Type"]="application/json"; body=JSON.stringify(body); }
+  for(let attempt=0;attempt<4;attempt++){
+    const r=await fetch(path.startsWith("http")?path:GRAPH+path,{method,headers:h,body});
+    if(r.status===429||r.status===503){ await new Promise(res=>setTimeout(res,(Number(r.headers.get("retry-after"))||2**attempt)*1000)); continue; }
+    if(!r.ok){
+      let msg=""; try{ msg=(await r.json()).error.message; }catch(e){}
+      if(r.status===403) throw new Error("Outlook refused to send from your account ("+(msg||"access denied")+"). Contact IT.");
+      throw new Error(msg||`Microsoft returned an error (${r.status}).`);
+    }
+    return (r.status===202||r.status===204)?null:r.json();
+  }
+  throw new Error("Microsoft is busy right now. Wait a minute and press Submit again.");
+}
+const b64=blob=>new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(String(fr.result).split(",")[1]); fr.onerror=()=>rej(fr.error); fr.readAsDataURL(blob); });
+const XLSX_TYPE="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+const MIME={jpg:"image/jpeg",jpeg:"image/jpeg",png:"image/png",webp:"image/webp",heic:"image/heic",heif:"image/heif",pdf:"application/pdf"};
+async function attach(msgId,name,blob,type){
+  if(blob.size<=3*1024*1024){
+    return graph("POST",`/me/messages/${msgId}/attachments`,{"@odata.type":"#microsoft.graph.fileAttachment",name,contentType:type,contentBytes:await b64(blob)});
+  }
+  const s=await graph("POST",`/me/messages/${msgId}/attachments/createUploadSession`,{AttachmentItem:{attachmentType:"file",name,size:blob.size,contentType:type}});
+  const CH=4*1024*1024;
+  for(let start=0;start<blob.size;start+=CH){
+    const end=Math.min(blob.size,start+CH);
+    const r=await fetch(s.uploadUrl,{method:"PUT",headers:{"Content-Type":"application/octet-stream","Content-Range":`bytes ${start}-${end-1}/${blob.size}`},body:blob.slice(start,end)});
+    if(!r.ok) throw new Error(`Couldn't attach ${name} (${r.status}).`);
+  }
+}
+function emailHTML(biz,total,reimb,pers,missing){
+  const trip=$("#trip").value.trim(), per=$("#period").value.trim(), note=$("#note").value.trim(), name=$("#emp").value.trim();
+  const rows=biz.map((it,i)=>`<tr><td>${i+1}</td><td>${esc(fmtDate(it.date))}</td><td style="text-align:right">${esc(money(it.amount))}</td><td>${esc(it.description.trim())}</td><td>${esc(it.counterparty.trim())}</td><td>${esc(it.merchant)}</td><td>${it.source==="cash"?"Out-of-pocket":"Card"}</td><td>${it.receipt?"Yes":'<b style="color:#b00020">Missing</b>'}</td></tr>`).join("");
+  return `<div style="font-family:Segoe UI,Arial,sans-serif;font-size:14px;color:#111">
+<p>Hi Danna, here is my expense report${trip?` for <b>${esc(trip)}</b>`:""}${per?` (${esc(per)})`:""}.</p>
+<p><b>Total: ${esc(money(total))}</b>${reimb?` · Reimburse to me: <b>${esc(money(reimb))}</b>`:""}${pers?` · Personal charges on company card: ${esc(money(pers))}`:""}${missing?` · <span style="color:#b00020">${missing} line(s) without a receipt</span>`:""}</p>
+<table cellpadding="6" cellspacing="0" border="1" style="border-collapse:collapse;border-color:#ccc;font-size:13px">
+<tr style="background:#e5f5e1"><th>#</th><th>Date</th><th>Amount</th><th>Description</th><th>Counterparty</th><th>Merchant</th><th>Paid with</th><th>Receipt</th></tr>${rows}</table>
+${note?`<p><b>Note:</b> ${esc(note)}</p>`:""}
+<p>The Excel report and receipts are attached.<br>${esc(name)}</p>
+<p style="color:#888;font-size:11px">Sent with the SCE expense report app (expenses.scebrokerage.com).</p></div>`;
 }
 let submitting=false;
 $("#submitBtn").addEventListener("click",async()=>{
@@ -797,34 +807,43 @@ $("#submitBtn").addEventListener("click",async()=>{
     showErr(`${missing} business ${missing===1?"line has":"lines have"} no receipt. Add ${missing===1?"it":"them"}, or explain in the note and press Submit again.`);
     return;
   }
+  const bytes=biz.reduce((s,i)=>s+(i.receipt?i.receipt.blob.size:0),0);
+  const maxMB=C.maxTotalMB||25;
+  if(bytes>maxMB*1024*1024){ showErr(`The receipts add up to ${(bytes/1048576).toFixed(1)} MB, more than the ${maxMB} MB email limit. Replace large PDFs with photos or screenshots, or split the report in two.`); return; }
   submitting=true; btn.disabled=true; $("#dlXlsx").disabled=true; showErr("");
+  let draftId=null;
   try{
     flash("Building the Excel report…");
     const wb=await buildWorkbook(false); const xbuf=await wb.xlsx.writeBuffer();
-    flash("Creating your report folder in SharePoint…");
-    const rep=await api("POST","/api/reports","{}",{"Content-Type":"application/json"});
-    const H={"x-report-token":rep.token,"Content-Type":"application/octet-stream"};
-    const xname=baseName()+".xlsx";
-    const x=await api("PUT",`/api/reports/files?folder=report&name=${encodeURIComponent(xname)}`,new Blob([xbuf]),H);
-    const withRc=biz.filter(i=>i.receipt); let k=0;
-    for(const it of biz){
-      if(!it.receipt) continue;
-      k++; flash(`Uploading receipt ${k} of ${withRc.length}…`);
-      await api("PUT",`/api/reports/files?folder=receipts&name=${encodeURIComponent(receiptName(it,biz.indexOf(it)+1))}`,it.receipt.blob,H);
-    }
-    flash("Emailing Danna…");
+    const total=biz.reduce((s,i)=>s+i.amount,0), reimb=biz.filter(i=>i.source==="cash").reduce((s,i)=>s+i.amount,0);
     const pers=S.items.filter(i=>!i.business&&i.source==="card").reduce((s,i)=>s+i.amount,0);
-    const done=await api("POST","/api/reports/submit",JSON.stringify({
-      token:rep.token, xlsxItemId:x.id, xlsxName:x.name, trip:$("#trip").value.trim(), period:$("#period").value.trim(),
-      note:$("#note").value.trim(), personal:Math.round(pers*100)/100,
-      lines:biz.map((it,i)=>({n:i+1,date:it.date,dateLabel:fmtDate(it.date),amount:it.amount,description:it.description.trim(),counterparty:it.counterparty.trim(),merchant:it.merchant,source:it.source,receipt:!!it.receipt}))
-    }),{"Content-Type":"application/json"});
+    const trip=$("#trip").value.trim();
+    flash("Preparing the email in your Outlook…");
+    const draft=await graph("POST","/me/messages",{
+      subject:`Expense report: ${$("#emp").value.trim()}${trip?` – ${trip}`:""} – ${money(total)}`,
+      body:{contentType:"HTML",content:emailHTML(biz,total,reimb,Math.round(pers*100)/100,missing)},
+      toRecipients:[{emailAddress:{address:C.dannaEmail}}],
+      ccRecipients:C.filingMailbox?[{emailAddress:{address:C.filingMailbox}}]:[],
+    });
+    draftId=draft.id;
+    flash("Attaching the Excel report…");
+    await attach(draftId,baseName()+".xlsx",new Blob([xbuf]),XLSX_TYPE);
+    let k=0; const n=biz.filter(i=>i.receipt).length;
+    for(const [i,it] of biz.entries()){
+      if(!it.receipt) continue;
+      k++; flash(`Attaching receipt ${k} of ${n}…`);
+      await attach(draftId,receiptName(it,i+1),it.receipt.blob,MIME[it.receipt.ext]||"application/octet-stream");
+    }
+    flash("Sending…");
+    await graph("POST",`/me/messages/${draftId}/send`);
+    draftId=null;
     S.submitted=true;
     $("#exForm").hidden=true; $("#exDone").hidden=false;
-    $("#doneText").innerHTML=`Danna has your report (${esc(money(biz.reduce((s,i)=>s+i.amount,0)))}, ${biz.length} ${biz.length===1?"line":"lines"}). A copy of the email is in your inbox. Files are in <a href="${esc(done.folderUrl)}" target="_blank" rel="noopener">${esc(done.folderName)}</a> in SharePoint.`;
+    $("#doneText").textContent=`Your report (${money(total)}, ${biz.length} ${biz.length===1?"line":"lines"}, ${n} ${n===1?"receipt":"receipts"}) was emailed to Danna. You'll find a copy in your Sent Items.`;
     $("#exDone").scrollIntoView({behavior:"smooth",block:"center"});
   }catch(e){
-    showErr(e.message||String(e)); flash("Nothing was emailed. Fix the problem above and submit again.");
+    if(draftId){ try{ await graph("DELETE",`/me/messages/${draftId}`); }catch(_){} }
+    showErr(e.message||String(e)); flash("Nothing was sent. Fix the problem above and press Submit again.");
   }finally{ submitting=false; btn.disabled=false; $("#dlXlsx").disabled=false; btn.dataset.confirm=""; btn.textContent="Submit to Danna"; }
 });
 $("#newReport").addEventListener("click",()=>{
@@ -836,60 +855,41 @@ window.addEventListener("beforeunload",e=>{ if(!S.submitted && S.items.some(i=>i
 
 /* ---------- boot ---------- */
 render();
+function showApp(){
+  $("#gate").hidden=true; $("#app").hidden=false;
+  $("#emp").value=CFG.user.name; $("#whoName").textContent=CFG.user.email||CFG.user.name;
+  render();
+}
+$("#signIn").addEventListener("click",async()=>{
+  showGateErr("");
+  try{ await pca.loginRedirect({scopes:SCOPES,prompt:"select_account"}); }
+  catch(e){ showGateErr("Sign-in didn't start: "+(e.message||e)); }
+});
+$("#signOut").addEventListener("click",()=>{
+  if(S.items.some(i=>i.business)&&!S.submitted&&$("#signOut").dataset.confirm!=="1"){ $("#signOut").dataset.confirm="1"; $("#signOut").textContent="Sign out and lose this report"; return; }
+  S.submitted=true; pca.logoutRedirect({account,postLogoutRedirectUri:location.origin+location.pathname});
+});
 (async()=>{
+  if(!window.msal||!C.clientId||/^<|YOUR/.test(C.clientId)){ $("#gateMsg").textContent="Sign-in for the expense app isn't switched on yet. Until it is, you can try the demo."; $("#signIn").disabled=true; return; }
   try{
-    const c=await api("GET","/api/config");
-    CFG=c; $("#emp").value=c.user.name; $("#whoName").textContent=c.user.email||c.user.name;
-    if(c.receiptReader){ const n=$("#aiNote"); n.classList.add("on"); n.textContent="Receipts you drop here are read automatically and matched to the right charge. Check each match before you submit."; }
-    render();
-  }catch(e){ $("#whoName").textContent="not signed in"; showErr(e.message); }
+    const base=location.origin+location.pathname.replace(/[^/]*$/,"");
+    pca=new msal.PublicClientApplication({
+      auth:{clientId:C.clientId,authority:`https://login.microsoftonline.com/${C.tenantId}`,redirectUri:base+"redirect.html",postLogoutRedirectUri:base},
+      cache:{cacheLocation:"localStorage"}
+    });
+    await pca.initialize();
+    const res=await pca.handleRedirectPromise();
+    account=(res&&res.account)||pca.getActiveAccount()||pca.getAllAccounts()[0]||null;
+    if(!account) return;
+    pca.setActiveAccount(account);
+    const me=await graph("GET","/me?$select=displayName,mail,userPrincipalName");
+    CFG.user={name:me.displayName||account.name||"",email:(me.mail||me.userPrincipalName||account.username||"").toLowerCase()};
+    showApp();
+  }catch(e){
+    showGateErr(/AADSTS50020|AADSTS700016|tenant/i.test(e.message||"")?"Use your SCE (scebrokerage.com) Microsoft account.":"Sign-in failed: "+(e.message||e));
+  }
 })();
 window.__sce={S,buildWorkbook,attachTo,prepFile,bestMatch,render};
-})();
-</script>
-<script>
-(function(){
-const $=s=>document.querySelector(s), P=window.__PV;
-const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const money=n=>"$"+Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
-const NOTES={"SKYWAY AIRLINES":["Flight to Houston office",""],"MAIN ST GRILL":["Client dinner","Gulf Coast Gas, two traders"],"BAYOU GRAND HOTEL":["Hotel, 1 night",""]};
-function loadExample(){
-  const inp=$("#csvFile"), dt=new DataTransfer(); dt.items.add(new File([P.csv],"demo_transaction_download.csv",{type:"text/csv"}));
-  inp.files=dt.files; inp.dispatchEvent(new Event("change"));
-  const t0=Date.now(), iv=setInterval(()=>{ const S=window.__sce&&window.__sce.S; if(S&&S.items.length){ clearInterval(iv);
-    S.items.forEach(i=>{ if(i.business&&NOTES[i.merchant]){ i.description=NOTES[i.merchant][0]; i.counterparty=NOTES[i.merchant][1]; } }); $("#trip").value="Houston office visit"; window.__sce.render(); }
-    else if(Date.now()-t0>5000) clearInterval(iv); },50);
-}
-(function wait(){ if($("#emp").value) loadExample(); else setTimeout(wait,100); })();
-$("#dlAfter").addEventListener("click",()=>{ document.querySelector('#dlXlsx').click(); });
-$("#pvBlank").addEventListener("click",()=>{ $("#newReport").click(); });
-document.addEventListener("pv:submitted",()=>{
-  const b=P.sub, lines=b.lines, total=lines.reduce((s,l)=>s+l.amount,0), reimb=lines.filter(l=>l.source==="cash").reduce((s,l)=>s+l.amount,0), miss=lines.filter(l=>!l.receipt).length;
-  const rep=P.files.filter(f=>f.folder==="report"), rc=P.files.filter(f=>f.folder==="receipts");
-  const tree=["Finance › Documents","└─ Reimbursements",`   └─ ${P.y}`,`      └─ ${P.ym}`,`         └─ ${P.folder}`,"            ├─ Expense Reports",...rep.map((f,i)=>`            │  ${i===rep.length-1?"└─":"├─"} ${f.name}`),"            └─ Receipts",...(rc.length?rc.map((f,i)=>`               ${i===rc.length-1?"└─":"├─"} ${f.name}`):["               (no receipts attached)"])].join("\n");
-  const rows=lines.map(l=>`<tr><td>${l.n}</td><td>${esc(l.dateLabel)}</td><td style="text-align:right">${money(l.amount)}</td><td>${esc(l.description)}</td><td>${esc(l.counterparty)}</td><td>${esc(l.merchant)}</td><td>${l.source==="cash"?"Out-of-pocket":"Card"}</td><td>${l.receipt?"Yes":'<b style="color:var(--bad)">Missing</b>'}</td></tr>`).join("");
-  let box=$("#danna"); if(!box){ box=document.createElement("div"); box.id="danna"; box.className="danna"; $("#exPanel").appendChild(box); }
-  box.hidden=false;
-  setTimeout(()=>{ $("#exDone h3").textContent="Demo: nothing was sent"; $("#doneText").textContent="In the real app, the employee sees a confirmation here and Danna gets the email. Below is exactly what she would get."; },60);
-  box.innerHTML=`<span class="eyebrow">Demo · what Danna receives</span>
-  <div class="mail"><div class="mail-h">
-    <span><b>From:</b> SCE Expenses &lt;expenses@scebrokerage.com&gt;</span>
-    <span><b>To:</b> Danna (Finance) · <b>Cc:</b> demo.employee@scebrokerage.com · <b>Reply-to:</b> Jordan Smith</span>
-    <span><b>Subject:</b> Expense report: Jordan Smith${b.trip?` – ${esc(b.trip)}`:""} – ${money(total)}</span>
-    ${rep.length?`<span><span class="att">Attachment: ${esc(rep[0].name)}</span></span>`:""}
-  </div><div class="mail-b">
-    <p>Jordan Smith submitted an expense report${b.trip?` for <b>${esc(b.trip)}</b>`:""}${b.period?` (${esc(b.period)})`:""}.</p>
-    <p><b>Total: ${money(total)}</b>${reimb?` · Reimburse to employee: <b>${money(reimb)}</b>`:""}${b.personal?` · Personal charges on company card: ${money(b.personal)}`:""}${miss?` · <span style="color:var(--bad)">${miss} line(s) without a receipt</span>`:""}</p>
-    <p><u>Open the report folder in SharePoint</u> (Excel report and all receipts)</p>
-    <table><tr><th>#</th><th>Date</th><th>Amount</th><th>Description</th><th>Counterparty</th><th>Merchant</th><th>Paid with</th><th>Receipt</th></tr>${rows}</table>
-    ${b.note?`<p><b>Note from Jordan Smith:</b> ${esc(b.note)}</p>`:""}
-  </div></div>
-  <h3>SharePoint folder</h3>
-  <div class="tree">${esc(tree)}</div>
-  <p class="msg">Use "Download a copy (.xlsx)" to open the Excel report exactly as Danna would get it.</p>`;
-  $("#dlXlsx").hidden=false;
-});
-$("#newReport").addEventListener("click",()=>{ const d=$("#danna"); if(d) d.hidden=true; });
 })();
 </script>
 </body>

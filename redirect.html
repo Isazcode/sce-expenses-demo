@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Signing in…</title>
+<style>body{font:15px system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;padding:40px 16px;color:#5d655f;background:#f5f6f4}@media (prefers-color-scheme:dark){body{background:#0e110f;color:#9aa49c}}</style>
+</head>
+<body>
+<p id="m">Signing you in…</p>
+<script src="vendor/msal-redirect-bridge-5.25.1.min.js"></script>
+<script>
+msalRedirectBridge.broadcastResponseToMainFrame().catch(function(e){
+  document.getElementById("m").innerHTML = 'Sign-in didn’t finish. <a href="./">Go back to the expense report</a> and try again.';
+  console.error(e);
+});
+</script>
+</body>
+</html>
